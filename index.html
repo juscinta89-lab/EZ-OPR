@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>ez-OPR — One Page Report</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0F2247">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ez-OPR">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+
+<style>
+/* ===================== TOKEN ===================== */
+:root{
+  --navy:#0F2247;
+  --navy-2:#1B3566;
+  --teal:#16B5A3;
+  --teal-soft:#E3F6F3;
+  --blue:#0A6FBF;
+  --ink:#131A26;
+  --ink-2:#5C6B7F;
+  --ink-3:#93A1B3;
+  --bg:#F2F5F8;
+  --card:#FFFFFF;
+  --line:#DFE6ED;
+  --danger:#C0392B;
+  --warn:#B8791A;
+  --r:16px;
+  --ui:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;overscroll-behavior-y:contain}
+body{
+  font-family:var(--ui);background:var(--bg);color:var(--ink);
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+input,textarea,select,button{font-family:inherit;font-size:16px}
+.hide{display:none !important}
+
+/* ===================== SKRIN ===================== */
+.screen{display:none;min-height:100vh}
+.screen.on{display:block}
+
+/* ===================== LOG MASUK ===================== */
+#scr-auth{
+  background:linear-gradient(165deg,#0F2247 0%,#143059 45%,#0A6FBF 100%);
+  padding:calc(var(--safe-t) + 34px) 22px calc(var(--safe-b) + 34px);
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+}
+.auth-box{width:100%;max-width:390px}
+.auth-logo{display:block;width:104px;height:104px;margin:0 auto 18px;border-radius:24px;background:#fff;padding:6px;box-shadow:0 12px 34px rgba(0,0,0,.28)}
+.auth-tag{text-align:center;color:#BBD3EA;font-size:12.5px;margin:0 0 24px;letter-spacing:.4px}
+.auth-card{background:#fff;border-radius:20px;padding:22px}
+.auth-card h2{margin:0 0 4px;font-size:20px;font-weight:750;letter-spacing:-.3px}
+.auth-card p.sub{margin:0 0 18px;font-size:13px;color:var(--ink-2)}
+.auth-swap{text-align:center;margin-top:16px;font-size:13.5px;color:#BBD3EA}
+.auth-swap button{background:none;border:0;color:#fff;font-weight:700;font-size:13.5px;text-decoration:underline;cursor:pointer;padding:4px}
+
+/* ===================== HEADER ===================== */
+.appbar{
+  position:sticky;top:0;z-index:50;background:var(--navy);color:#fff;
+  padding:calc(var(--safe-t) + 12px) 16px 12px;
+}
+.appbar-row{display:flex;align-items:center;gap:11px}
+.appbar img{width:34px;height:34px;border-radius:9px;background:#fff;padding:2px;flex:none}
+.appbar h1{margin:0;font-size:17px;font-weight:750;letter-spacing:-.2px;flex:1}
+.appbar h1 small{display:block;font-size:11px;font-weight:500;opacity:.72;letter-spacing:.3px}
+.icon-btn{
+  width:36px;height:36px;border-radius:11px;border:0;background:rgba(255,255,255,.14);
+  color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none
+}
+.icon-btn:active{background:rgba(255,255,255,.26)}
+
+/* ===================== KANDUNGAN ===================== */
+.body{padding:16px 16px calc(var(--safe-b) + 108px);max-width:760px;margin:0 auto}
+.tab{display:none}
+.tab.on{display:block;animation:rise .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:13px}
+.card > h2{
+  margin:0 0 14px;font-size:11px;font-weight:750;letter-spacing:1.1px;text-transform:uppercase;
+  color:var(--blue);display:flex;align-items:center;gap:9px
+}
+.card > h2::after{content:"";flex:1;height:1px;background:var(--line)}
+
+label{display:block;font-size:12px;font-weight:650;color:var(--ink-2);margin:0 0 5px}
+input,textarea,select{
+  width:100%;color:var(--ink);border:1px solid var(--line);border-radius:11px;
+  padding:12px;background:#FAFCFE;transition:.16s;font-size:16px
+}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px var(--teal-soft)}
+textarea{resize:vertical;line-height:1.55}
+.field{margin-bottom:13px}
+.field:last-child{margin-bottom:0}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.hint{font-size:11.5px;color:var(--ink-2);margin:6px 0 0;line-height:1.45}
+
+/* ===================== BUTANG ===================== */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-size:15px;font-weight:680;padding:13px 18px;border-radius:13px;
+  border:1px solid transparent;cursor:pointer;transition:.16s;width:100%
+}
+.btn:active{transform:scale(.985)}
+.btn:disabled{opacity:.55;cursor:progress;transform:none}
+.btn-main{background:var(--navy);color:#fff}
+.btn-teal{background:var(--teal);color:#06312C}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+.btn-danger{background:#fff;border-color:#F0C8C2;color:var(--danger)}
+.btn-sm{padding:9px 13px;font-size:13.5px;border-radius:10px;width:auto}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}
+
+/* ===================== NAV BAWAH (kapsul terapung) ===================== */
+.nav{
+  position:fixed;left:50%;transform:translateX(-50%);
+  bottom:calc(var(--safe-b) + 14px);z-index:60;
+  display:flex;gap:3px;padding:6px;background:rgba(15,34,71,.96);
+  backdrop-filter:blur(14px);border-radius:22px;
+  box-shadow:0 10px 30px rgba(15,34,71,.32);
+  width:calc(100% - 32px);max-width:420px
+}
+.nav button{
+  flex:1;border:0;background:transparent;color:rgba(255,255,255,.66);
+  font-size:11px;font-weight:650;padding:8px 4px 7px;border-radius:17px;
+  cursor:pointer;transition:.18s;display:flex;flex-direction:column;align-items:center;gap:3px
+}
+.nav button svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.nav button.on{background:var(--teal);color:#06312C}
+
+/* ===================== SENARAI LAPORAN ===================== */
+.search{position:relative;margin-bottom:13px}
+.search input{padding-left:38px;background:#fff}
+.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:17px;height:17px;stroke:var(--ink-3);fill:none;stroke-width:2}
+.yr{font-size:11px;font-weight:750;letter-spacing:1.2px;color:var(--ink-3);margin:18px 0 9px;text-transform:uppercase}
+.yr:first-child{margin-top:0}
+.item{
+  background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 14px;
+  margin-bottom:9px;display:flex;gap:12px;align-items:center;cursor:pointer;transition:.15s
+}
+.item:active{border-color:var(--teal);background:#FAFEFD}
+.item .no{
+  width:42px;height:42px;flex:none;border-radius:11px;background:var(--navy);color:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1
+}
+.item .no b{font-size:15px;font-weight:800}
+.item .no span{font-size:7.5px;letter-spacing:.6px;opacity:.75;margin-top:2px}
+.item .txt{flex:1;min-width:0}
+.item .txt b{display:block;font-size:14.5px;font-weight:700;line-height:1.3;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .txt span{font-size:12px;color:var(--ink-2);display:block;margin-top:2px}
+.chip{
+  display:inline-block;font-size:9.5px;font-weight:750;letter-spacing:.7px;text-transform:uppercase;
+  background:var(--teal-soft);color:#0B6F63;padding:3px 7px;border-radius:6px;margin-right:6px
+}
+.chip.warn{background:#FDF0DC;color:var(--warn)}
+.empty{text-align:center;padding:52px 22px;color:var(--ink-2)}
+.empty img{width:82px;height:82px;opacity:.42;margin-bottom:14px}
+.empty b{display:block;font-size:16px;color:var(--ink);margin-bottom:6px}
+
+/* ===================== GAMBAR ===================== */
+.photos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.slot{
+  position:relative;height:104px;border-radius:12px;overflow:hidden;
+  border:1.5px dashed var(--line);background:#FAFCFE;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer
+}
+.slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.slot .plus{font-size:25px;color:var(--ink-3);font-weight:300;line-height:1}
+.slot .cap{font-size:11px;color:var(--ink-2);margin-top:4px;font-weight:600}
+.slot .del{
+  position:absolute;top:6px;right:6px;z-index:2;width:26px;height:26px;border-radius:50%;
+  background:rgba(19,26,38,.74);color:#fff;border:0;font-size:15px;cursor:pointer;display:none;
+  align-items:center;justify-content:center
+}
+.slot.has .del{display:flex}
+.slot.has{border-style:solid}
+
+.logo-box{display:flex;align-items:center;gap:13px;margin-bottom:14px}
+.logo-prev{
+  width:64px;height:64px;border-radius:12px;border:1px solid var(--line);background:#FAFCFE;
+  display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--ink-3);
+  overflow:hidden;flex:none;text-align:center;padding:4px
+}
+.logo-prev img{width:100%;height:100%;object-fit:contain}
+
+/* ===================== STATUS ===================== */
+.toast{
+  position:fixed;left:50%;transform:translateX(-50%) translateY(-14px);
+  top:calc(var(--safe-t) + 12px);z-index:200;max-width:calc(100% - 32px);
+  padding:12px 17px;border-radius:13px;font-size:13.5px;font-weight:600;line-height:1.45;
+  box-shadow:0 8px 26px rgba(19,26,38,.22);opacity:0;pointer-events:none;transition:.28s
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{background:#0E4F45;color:#DFF6F2}
+.toast.err{background:#7C241A;color:#FBE6E2}
+.toast.wait{background:var(--navy);color:#DCE7F5}
+
+/* ===================== PENUNJUK MUAT ===================== */
+.fit{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.fit-track{flex:1;height:8px;border-radius:99px;background:#DDE4EC;overflow:hidden;position:relative}
+.fit-bar{height:100%;width:0;border-radius:99px;background:var(--teal);transition:width .35s,background .3s}
+.fit-track::after{content:"";position:absolute;right:0;top:-4px;bottom:-4px;width:2px;background:var(--ink);opacity:.3}
+.fit-label{font-size:11px;font-weight:700;color:var(--ink-2);white-space:nowrap}
+.fit.over .fit-bar{background:var(--danger)}
+.fit.over .fit-label{color:var(--danger)}
+
+.stage{background:#B9C4D0;border-radius:var(--r);padding:12px;overflow:auto;border:1px solid var(--line)}
+.stage-inner{transform-origin:top center;margin:0 auto}
+
+/* =====================================================================
+   HALAMAN A4 — susun atur guna flexbox supaya selamat untuk eksport PDF
+   ===================================================================== */
+.page{
+  width:210mm;height:297mm;background:#fff;color:#000;padding:9mm;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:calc(9pt * var(--sc,1));line-height:1.34;
+  display:flex;flex-direction:column;box-shadow:0 3px 18px rgba(0,0,0,.2);
+  overflow:hidden;
+}
+.p-head{display:flex;border:1.6pt solid var(--pc,#0F2247);overflow:hidden}
+.p-head .lg{width:17mm;flex:none;display:flex;align-items:center;justify-content:center;padding:1.6mm;border-right:1.6pt solid var(--pc,#0F2247)}
+.p-head .lg img{max-width:100%;max-height:14mm;object-fit:contain}
+.p-head .nm{flex:1;padding:2.4mm 4mm;display:flex;flex-direction:column;justify-content:center}
+.p-head .nm b{font-size:calc(14pt * var(--sc,1));font-weight:800;letter-spacing:.3px;color:var(--pc,#0F2247);line-height:1.12}
+.p-head .nm span{font-size:calc(8.4pt * var(--sc,1));color:#465A72}
+.p-head .un{
+  width:36mm;flex:none;background:var(--pc,#0F2247);color:#fff;padding:2.4mm 3mm;
+  display:flex;flex-direction:column;justify-content:center;align-items:flex-end;text-align:right
+}
+.p-head .un b{font-size:calc(11pt * var(--sc,1));font-weight:800;letter-spacing:.5px;line-height:1.1}
+.p-head .un span{font-size:calc(8pt * var(--sc,1))}
+
+.p-kind{text-align:center;font-size:calc(8.6pt * var(--sc,1));font-weight:700;letter-spacing:3px;color:#16B5A3;margin:3mm 0 1.4mm}
+.p-title{
+  background:var(--pc,#0F2247);color:#fff;border-radius:14mm;text-align:center;
+  padding:2.4mm 6mm;font-size:calc(13pt * var(--sc,1));font-weight:800;letter-spacing:.3px;line-height:1.2
+}
+
+.p-meta{display:flex;border:.9pt solid #C6D0DB;margin-top:3mm}
+.p-meta > div{flex:1;padding:1.9mm 2.6mm;border-right:.9pt solid #C6D0DB;min-width:0}
+.p-meta > div:last-child{border-right:0}
+.p-meta em{display:block;font-style:normal;font-size:calc(6.6pt * var(--sc,1));font-weight:700;letter-spacing:.9px;color:#8496A8;margin-bottom:.7mm}
+.p-meta strong{font-size:calc(8.6pt * var(--sc,1));font-weight:700;display:block}
+
+.p-sec{margin-top:3mm}
+.p-sec > h3{
+  margin:0 0 1.6mm;font-size:calc(8.2pt * var(--sc,1));font-weight:800;letter-spacing:1.4px;
+  color:var(--pc,#0F2247);border-left:2.6pt solid #16B5A3;padding-left:2.4mm;line-height:1.2
+}
+.p-sec ul{margin:0;padding-left:4.6mm}
+.p-sec li{margin-bottom:.9mm;text-align:justify}
+.p-two{display:flex;margin-top:3mm}
+.p-two > div{flex:1}
+.p-two > div:first-child{padding-right:3mm}
+
+.p-shots{display:flex;margin-top:auto;padding-top:4mm}
+.p-shot{
+  flex:1;height:33mm;border:.9pt solid #C6D0DB;overflow:hidden;background:#F0F3F6;
+  display:flex;align-items:center;justify-content:center;margin-right:2.2mm
+}
+.p-shot:last-child{margin-right:0}
+.p-shot img{width:100%;height:100%;object-fit:cover}
+.p-shot span{font-size:calc(7pt * var(--sc,1));color:#A5B2C0}
+
+.p-sign{display:flex;margin-top:7mm}
+.p-sign .s{flex:1;text-align:center;padding:0 3mm}
+.p-sign .s em{font-style:normal;font-size:calc(7.8pt * var(--sc,1));color:#465A72;display:block;margin-bottom:9mm}
+.p-sign .s hr{border:0;border-top:.8pt solid #131A26;margin:0 0 1.2mm}
+.p-sign .s b{display:block;font-size:calc(8.2pt * var(--sc,1));font-weight:800;line-height:1.25}
+.p-sign .s span{font-size:calc(7.4pt * var(--sc,1));color:#465A72;display:block;line-height:1.3}
+
+/* ===================== CETAK ===================== */
+@page{size:A4 portrait;margin:0}
+@media print{
+  body{background:#fff}
+  .appbar,.nav,.noprint,.tab:not(#tab-view){display:none !important}
+  .body{padding:0;max-width:none}
+  #tab-view{display:block !important}
+  .stage{background:#fff;padding:0;border:0;overflow:visible}
+  .stage-inner{transform:none !important;width:auto !important;height:auto !important}
+  .page{box-shadow:none;margin:0}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+@media (max-width:480px){ .row{grid-template-columns:1fr} }
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ============================ LOG MASUK ============================ -->
+<div class="screen on" id="scr-auth">
+  <div class="auth-box">
+    <img src="logo.png" alt="ez-OPR" class="auth-logo">
+    <p class="auth-tag">Penjana One Page Report untuk sekolah</p>
+
+    <div class="auth-card">
+      <h2 id="aTitle">Log masuk</h2>
+      <p class="sub" id="aSub">Guna akaun sekolah anda.</p>
+
+      <div class="field" id="wrapNama" style="display:none">
+        <label for="aNama">Nama penuh</label>
+        <input id="aNama" autocomplete="name" placeholder="ALIMIN BIN ABU BAKAR">
+      </div>
+      <div class="field">
+        <label for="aEmel">E-mel</label>
+        <input id="aEmel" type="email" autocomplete="email" placeholder="guru@sekolah.edu.my">
+      </div>
+      <div class="field">
+        <label for="aKata">Kata laluan</label>
+        <input id="aKata" type="password" autocomplete="current-password" placeholder="Sekurang-kurangnya 6 aksara">
+      </div>
+      <div class="field" id="wrapKod" style="display:none">
+        <label for="aKod">Kod sekolah</label>
+        <input id="aKod" placeholder="skbelukar" autocapitalize="none">
+        <p class="hint">Guru pertama yang mendaftar dengan kod ini menjadi pentadbir. Guru lain masukkan kod yang sama untuk sertai sekolah yang sudah wujud.</p>
+      </div>
+
+      <button class="btn btn-main" id="btnAuth">Log masuk</button>
+      <button class="btn btn-ghost btn-sm" id="btnLupa" style="width:100%;margin-top:9px;background:none;border:0;color:var(--ink-2)">Lupa kata laluan?</button>
+    </div>
+
+    <p class="auth-swap">
+      <span id="swapText">Belum ada akaun?</span>
+      <button id="btnSwap">Daftar sekarang</button>
+    </p>
+  </div>
+</div>
+
+<!-- ============================ APP ============================ -->
+<div class="screen" id="scr-app">
+
+  <div class="appbar">
+    <div class="appbar-row">
+      <img src="logo.png" alt="">
+      <h1>ez-OPR<small id="barSub">—</small></h1>
+      <button class="icon-btn" id="btnKeluar" title="Log keluar" aria-label="Log keluar">⏻</button>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- ---------- SENARAI ---------- -->
+    <div class="tab on" id="tab-list">
+      <div class="search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="cari" placeholder="Cari nama program…">
+      </div>
+      <div id="senarai"></div>
+    </div>
+
+    <!-- ---------- BORANG ---------- -->
+    <div class="tab" id="tab-edit">
+      <div class="card">
+        <h2>Maklumat aktiviti</h2>
+        <div class="field">
+          <label for="fTajuk">Nama program / aktiviti</label>
+          <input id="fTajuk" placeholder="Program Nilam Bulanan">
+        </div>
+        <div class="row">
+          <div class="field"><label for="fTarikh">Tarikh</label><input id="fTarikh" type="date"></div>
+          <div class="field"><label for="fMasa">Masa</label><input id="fMasa" placeholder="7:45 pagi – 8:15 pagi"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="fTempat">Tempat</label><input id="fTempat" placeholder="Pusat Sumber Sekolah"></div>
+          <div class="field"><label for="fSasaran">Kumpulan sasaran</label><input id="fSasaran" placeholder="Murid Tahun 4 – 6"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="fUnit">Unit</label><select id="fUnit"></select></div>
+          <div class="field"><label for="fBil">Bilangan</label><input id="fBil" placeholder="01"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Empat gambar</h2>
+        <div class="photos" id="photos"></div>
+        <p class="hint">Gambar disimpan dalam peranti ini sahaja, bukan di pelayan. Jika anda buka laporan ini di telefon lain, ruangan gambar akan kosong.</p>
+      </div>
+
+      <div class="card">
+        <h2>Jana isi kandungan</h2>
+        <div class="field">
+          <label for="fNota">Nota tambahan untuk AI <span style="font-weight:500">(pilihan)</span></label>
+          <textarea id="fNota" rows="2" placeholder="Kerjasama dengan PIBG, penyertaan 120 murid, ada sesi pertandingan bercerita"></textarea>
+        </div>
+        <button class="btn btn-teal" id="btnAI">Jana dengan AI</button>
+        <p class="hint">AI menulis objektif, butiran pelaksanaan, kekuatan, kelemahan dan penambahbaikan. Semua ayat boleh disunting selepas dijana.</p>
+      </div>
+
+      <div class="card">
+        <h2>Isi kandungan laporan</h2>
+        <div class="field"><label for="fObjektif">Objektif <span style="font-weight:500">(satu baris satu ayat)</span></label><textarea id="fObjektif" rows="3"></textarea></div>
+        <div class="field"><label for="fButiran">Butiran pelaksanaan</label><textarea id="fButiran" rows="4"></textarea></div>
+        <div class="row">
+          <div class="field"><label for="fKekuatan">Kekuatan</label><textarea id="fKekuatan" rows="3"></textarea></div>
+          <div class="field"><label for="fKelemahan">Kelemahan</label><textarea id="fKelemahan" rows="3"></textarea></div>
+        </div>
+        <div class="field"><label for="fPenambahbaikan">Penambahbaikan</label><textarea id="fPenambahbaikan" rows="3"></textarea></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="btnBuang">Padam laporan</button>
+        <button class="btn btn-main" id="btnSimpan">Simpan</button>
+      </div>
+      <button class="btn btn-blue" id="btnPratonton">Lihat pratonton</button>
+    </div>
+
+    <!-- ---------- PRATONTON ---------- -->
+    <div class="tab" id="tab-view">
+      <div class="noprint">
+        <div class="fit" id="fit">
+          <div class="fit-track"><div class="fit-bar" id="fitBar"></div></div>
+          <div class="fit-label" id="fitLabel">Muat 1 halaman</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-main" id="btnPdf">Muat turun PDF</button>
+          <button class="btn btn-ghost" id="btnCetak">Cetak</button>
+        </div>
+        <div class="card" style="padding:13px">
+          <label for="fScale">Saiz teks laporan — <span id="scaleVal">100%</span></label>
+          <input id="fScale" type="range" min="80" max="112" step="2" value="100" style="padding:0;border:0;background:none">
+          <p class="hint">Kecilkan sedikit jika penunjuk di atas bertukar merah.</p>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-inner" id="stageInner">
+          <div class="page" id="page">
+            <div class="p-head">
+              <div class="lg" id="pLogo"></div>
+              <div class="nm"><b id="pSekolah">NAMA SEKOLAH</b><span id="pAlamat"></span></div>
+              <div class="un"><b id="pUnit">UNIT</b><span id="pBil">Bilangan 01</span></div>
+            </div>
+            <div class="p-kind">ONE PAGE REPORT</div>
+            <div class="p-title" id="pTajuk">NAMA PROGRAM</div>
+            <div class="p-meta">
+              <div><em>TARIKH</em><strong id="pTarikh">—</strong></div>
+              <div><em>MASA</em><strong id="pMasa">—</strong></div>
+              <div><em>TEMPAT</em><strong id="pTempat">—</strong></div>
+              <div><em>SASARAN</em><strong id="pSasaran">—</strong></div>
+            </div>
+            <div class="p-sec"><h3>OBJEKTIF</h3><ul id="pObjektif"></ul></div>
+            <div class="p-sec"><h3>BUTIRAN PELAKSANAAN</h3><ul id="pButiran"></ul></div>
+            <div class="p-two">
+              <div class="p-sec" style="margin:0"><h3>KEKUATAN</h3><ul id="pKekuatan"></ul></div>
+              <div class="p-sec" style="margin:0"><h3>KELEMAHAN</h3><ul id="pKelemahan"></ul></div>
+            </div>
+            <div class="p-sec"><h3>PENAMBAHBAIKAN</h3><ul id="pPenambahbaikan"></ul></div>
+            <div class="p-shots" id="pShots"></div>
+            <div class="p-sign" id="pSign"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- TETAPAN ---------- -->
+    <div class="tab" id="tab-setup">
+      <div class="card">
+        <h2>Identiti sekolah</h2>
+        <div class="logo-box">
+          <div class="logo-prev" id="logoPrev">Tiada logo</div>
+          <div style="flex:1">
+            <button class="btn btn-ghost btn-sm" id="btnLogo" style="width:100%;margin-bottom:7px">Pilih logo sekolah</button>
+            <button class="btn btn-ghost btn-sm" id="btnLogoDel" style="width:100%">Buang logo</button>
+          </div>
+        </div>
+        <div class="field"><label for="sNama">Nama sekolah</label><input id="sNama" placeholder="SK BELUKAR"></div>
+        <div class="field"><label for="sAlamat">Alamat</label><input id="sAlamat" placeholder="18500 Machang, Kelantan"></div>
+        <div class="row">
+          <div class="field"><label for="sUnit">Senarai unit <span style="font-weight:500">(pisah dengan koma)</span></label><input id="sUnit" placeholder="KURIKULUM, KOKURIKULUM, HEM, PSS"></div>
+          <div class="field"><label for="sWarna">Warna utama</label><input id="sWarna" type="color" value="#0F2247" style="height:46px;padding:4px"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Pengesah laporan</h2>
+        <p class="hint" style="margin:-6px 0 14px">Kosongkan nama jika ruangan itu tidak diperlukan.</p>
+        <div id="signers"></div>
+      </div>
+
+      <div class="card">
+        <h2>Penjana AI</h2>
+        <div class="row">
+          <div class="field">
+            <label for="sProv">Penyedia</label>
+            <select id="sProv">
+              <option value="gemini">Google Gemini (percuma)</option>
+              <option value="openai">OpenAI ChatGPT</option>
+            </select>
+          </div>
+          <div class="field"><label for="sModel">Model</label><select id="sModel"></select></div>
+        </div>
+        <div class="field">
+          <label for="sKey">Kunci API</label>
+          <input id="sKey" type="password" placeholder="AIza…">
+          <p class="hint" id="keyHint">Dapatkan kunci percuma di Google AI Studio. Kunci ini dikongsi dengan semua guru sekolah anda supaya semua orang boleh jana laporan.</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="btnUjiAI" style="width:100%">Uji sambungan AI</button>
+      </div>
+
+      <div class="card">
+        <h2>Akaun</h2>
+        <div class="field"><label>Nama</label><input id="sPengguna" placeholder="Nama penuh"></div>
+        <div class="field"><label>Kod sekolah</label><input id="sKod" disabled></div>
+        <div class="field" style="margin-bottom:14px"><label>Peranan</label><input id="sPeranan" disabled></div>
+        <button class="btn btn-main" id="btnSimpanTetapan">Simpan tetapan</button>
+      </div>
+
+      <div class="card">
+        <h2>Penyimpanan gambar</h2>
+        <p class="hint" style="margin:0 0 12px">Semua gambar aktiviti disimpan dalam peranti ini sahaja supaya app kekal pada pelan Firebase percuma.</p>
+        <div id="fotoInfo" style="font-size:13px;color:var(--ink-2);margin-bottom:12px"></div>
+        <button class="btn btn-danger btn-sm" id="btnFotoKosong" style="width:100%">Kosongkan semua gambar tersimpan</button>
+      </div>
+
+      <p class="hint" style="text-align:center">ez-OPR <span id="verTag"></span></p>
+    </div>
+
+  </div>
+
+  <div class="nav">
+    <button data-t="list" class="on">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Laporan</button>
+    <button data-t="edit">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Baru</button>
+    <button data-t="view">
+      <svg viewBox="0 0 24 24"><path d="M6 3h9l5 5v13a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M15 3v5h5"/></svg>Pratonton</button>
+    <button data-t="setup">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-2.7 1.1V21a2 2 0 11-4 0v-.1A1.6 1.6 0 006.5 19.4l-.1.1a2 2 0 11-2.8-2.8l.1-.1A1.6 1.6 0 003 15H3a2 2 0 110-4h.1A1.6 1.6 0 004.6 9.5l-.1-.1a2 2 0 112.8-2.8l.1.1A1.6 1.6 0 009 6.5V6a2 2 0 114 0v.1a1.6 1.6 0 002.7 1.1l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 001.1 2.7H21a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z"/></svg>Tetapan</button>
+  </div>
+</div>
+
+<input type="file" id="filePhoto" accept="image/*" hidden>
+<input type="file" id="fileLogo" accept="image/*" hidden>
+
+<script src="config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* =====================================================================
+   ez-OPR
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const HARI  = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
+const BULAN = ['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+const MODEL = {
+  gemini: ['gemini-2.5-flash','gemini-2.0-flash','gemini-2.5-flash-lite'],
+  openai: ['gpt-4o-mini','gpt-4.1-mini','gpt-4o']
+};
+const DEF_SIGN = [
+  {peranan:'Disediakan oleh', nama:'', jawatan:''},
+  {peranan:'Disemak oleh',    nama:'', jawatan:''},
+  {peranan:'Disahkan oleh',   nama:'', jawatan:''}
+];
+
+let auth, db, uid = null, profil = null, sekolah = null;
+let laporan = [];        // senarai ringkas
+let semasa = null;       // laporan yang sedang disunting
+let photos = [null,null,null,null];
+let daftarMod = false;
+
+$('verTag').textContent = 'v' + (window.EZOPR_VERSI || '1.0.0');
+
+/* ===================== UTILITI ===================== */
+function toast(msg, kind='ok', ms=3200){
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast on ' + kind;
+  clearTimeout(t._t);
+  if(ms) t._t = setTimeout(()=> t.className = 'toast ' + kind, ms);
+}
+function tarikhBM(iso){
+  if(!iso) return '—';
+  const d = new Date(iso + 'T00:00:00');
+  if(isNaN(d)) return iso;
+  return `${d.getDate()} ${BULAN[d.getMonth()]} ${d.getFullYear()} (${HARI[d.getDay()]})`;
+}
+function tarikhPendek(iso){
+  if(!iso) return '';
+  const d = new Date(iso + 'T00:00:00');
+  return isNaN(d) ? iso : `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+}
+const lines = t => (t||'').split('\n').map(s=>s.replace(/^[\s•\-–*]+|^\d+[.)]\s*/,'').trim()).filter(Boolean);
+const esc = s => (s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const local = {
+  get(k){ try{ return localStorage.getItem(k) }catch(e){ return null } },
+  set(k,v){ try{ localStorage.setItem(k,v) }catch(e){} }
+};
+
+/* ===================== INDEXEDDB (gambar) ===================== */
+let idb = null;
+function dbOpen(){
+  return new Promise((res,rej)=>{
+    if(idb) return res(idb);
+    const r = indexedDB.open('ezopr', 1);
+    r.onupgradeneeded = ()=> r.result.createObjectStore('foto');
+    r.onsuccess = ()=>{ idb = r.result; res(idb) };
+    r.onerror  = ()=> rej(new Error('Storan gambar tidak dapat dibuka'));
+  });
+}
+async function fotoSimpan(id, arr){
+  const d = await dbOpen();
+  return new Promise((res,rej)=>{
+    const tx = d.transaction('foto','readwrite');
+    tx.objectStore('foto').put(arr, id);
+    tx.oncomplete = res; tx.onerror = ()=>rej(tx.error);
+  });
+}
+async function fotoAmbil(id){
+  const d = await dbOpen();
+  return new Promise(res=>{
+    const q = d.transaction('foto','readonly').objectStore('foto').get(id);
+    q.onsuccess = ()=> res(q.result || [null,null,null,null]);
+    q.onerror   = ()=> res([null,null,null,null]);
+  });
+}
+async function fotoBuang(id){
+  const d = await dbOpen();
+  d.transaction('foto','readwrite').objectStore('foto').delete(id);
+}
+async function fotoKunci(){
+  const d = await dbOpen();
+  return new Promise(res=>{
+    const q = d.transaction('foto','readonly').objectStore('foto').getAllKeys();
+    q.onsuccess = ()=> res(q.result || []);
+    q.onerror   = ()=> res([]);
+  });
+}
+
+/* ===================== FIREBASE ===================== */
+try{
+  firebase.initializeApp(window.EZOPR_FIREBASE);
+  auth = firebase.auth();
+  db   = firebase.firestore();
+  db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+}catch(e){
+  toast('Konfigurasi Firebase belum diisi dalam config.js', 'err', 0);
+}
+
+auth && auth.onAuthStateChanged(async u=>{
+  if(!u){ uid=null; profil=null; sekolah=null; tunjuk('auth'); return }
+  uid = u.uid;
+  try{
+    const snap = await db.collection('pengguna').doc(uid).get();
+    if(!snap.exists){ await auth.signOut(); toast('Profil pengguna tidak dijumpai.','err'); return }
+    profil = snap.data();
+    await muatSekolah();
+    await muatLaporan();
+    $('barSub').textContent = (sekolah.nama || profil.sekolahId) + ' · ' + (profil.nama||'');
+    tunjuk('app');
+    tab('list');
+  }catch(e){
+    toast('Gagal memuatkan data: ' + e.message, 'err');
+  }
+});
+
+function tunjuk(s){
+  $('scr-auth').classList.toggle('on', s==='auth');
+  $('scr-app').classList.toggle('on', s==='app');
+}
+
+/* ===================== AUTH ===================== */
+$('btnSwap').onclick = ()=>{
+  daftarMod = !daftarMod;
+  $('aTitle').textContent = daftarMod ? 'Daftar akaun' : 'Log masuk';
+  $('aSub').textContent   = daftarMod ? 'Satu akaun untuk satu guru.' : 'Guna akaun sekolah anda.';
+  $('btnAuth').textContent = daftarMod ? 'Daftar' : 'Log masuk';
+  $('wrapNama').style.display = daftarMod ? 'block' : 'none';
+  $('wrapKod').style.display  = daftarMod ? 'block' : 'none';
+  $('swapText').textContent   = daftarMod ? 'Sudah ada akaun?' : 'Belum ada akaun?';
+  $('btnSwap').textContent    = daftarMod ? 'Log masuk' : 'Daftar sekarang';
+  $('btnLupa').style.display  = daftarMod ? 'none' : 'block';
+};
+
+$('btnAuth').onclick = async ()=>{
+  const emel = $('aEmel').value.trim(), kata = $('aKata').value;
+  if(!emel || !kata) return toast('Isi e-mel dan kata laluan.','err');
+
+  const b = $('btnAuth'); b.disabled = true;
+  try{
+    if(daftarMod){
+      const nama = $('aNama').value.trim();
+      const kod  = $('aKod').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'');
+      if(!nama) throw new Error('Isi nama penuh.');
+      if(!kod)  throw new Error('Isi kod sekolah.');
+
+      const sekolahRef = db.collection('sekolah').doc(kod);
+      const ada = (await sekolahRef.get()).exists;
+
+      const cred = await auth.createUserWithEmailAndPassword(emel, kata);
+      await db.collection('pengguna').doc(cred.user.uid).set({
+        nama, emel, sekolahId: kod,
+        peranan: ada ? 'guru' : 'admin',
+        dicipta: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      if(!ada){
+        await sekolahRef.set({
+          nama:'', alamat:'', warna:'#0F2247', logo:'',
+          unit:['KURIKULUM','KOKURIKULUM','HEM','PSS'],
+          pengesah: DEF_SIGN,
+          aiProvider:'gemini', aiModel:'gemini-2.5-flash', aiKey:'',
+          pemilik: cred.user.uid,
+          dicipta: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        toast('Sekolah baharu dicipta. Anda pentadbir — lengkapkan tab Tetapan.','ok',5200);
+      }
+    }else{
+      await auth.signInWithEmailAndPassword(emel, kata);
+    }
+  }catch(e){
+    toast(ralatAuth(e), 'err', 5000);
+  }finally{ b.disabled = false }
+};
+
+$('btnLupa').onclick = async ()=>{
+  const emel = $('aEmel').value.trim();
+  if(!emel) return toast('Isi e-mel dahulu, kemudian tekan sekali lagi.','err');
+  try{
+    await auth.sendPasswordResetEmail(emel);
+    toast('Pautan set semula kata laluan dihantar ke e-mel anda.','ok',5000);
+  }catch(e){ toast(ralatAuth(e),'err') }
+};
+
+function ralatAuth(e){
+  const m = {
+    'auth/invalid-email':'Format e-mel tidak sah.',
+    'auth/user-not-found':'Akaun tidak dijumpai.',
+    'auth/wrong-password':'Kata laluan salah.',
+    'auth/invalid-credential':'E-mel atau kata laluan salah.',
+    'auth/email-already-in-use':'E-mel ini sudah didaftarkan.',
+    'auth/weak-password':'Kata laluan perlu sekurang-kurangnya 6 aksara.',
+    'auth/network-request-failed':'Tiada sambungan internet.',
+    'auth/too-many-requests':'Terlalu banyak cubaan. Cuba lagi sebentar.'
+  };
+  return m[e.code] || e.message;
+}
+
+$('btnKeluar').onclick = ()=>{
+  if(confirm('Log keluar daripada ez-OPR?')) auth.signOut();
+};
+
+/* ===================== NAV ===================== */
+document.querySelectorAll('.nav button').forEach(b=>{
+  b.onclick = ()=> tab(b.dataset.t, true);
+});
+function tab(name, dariNav){
+  document.querySelectorAll('.nav button').forEach(x=> x.classList.toggle('on', x.dataset.t===name));
+  document.querySelectorAll('.tab').forEach(v=> v.classList.remove('on'));
+  $('tab-'+name).classList.add('on');
+  window.scrollTo({top:0, behavior:'smooth'});
+  if(name==='edit' && dariNav && semasa && semasa.id) { /* kekal */ }
+  if(name==='edit' && dariNav && !semasa) baru();
+  if(name==='view'){ isiBorangKeSemasa(); render() }
+  if(name==='setup') isiTetapan();
+  if(name==='list') lukisSenarai();
+}
+
+/* ===================== SEKOLAH & LAPORAN ===================== */
+async function muatSekolah(){
+  const ref = db.collection('sekolah').doc(profil.sekolahId);
+  const s = await ref.get();
+  sekolah = s.exists ? s.data() : {};
+  sekolah.unit = sekolah.unit && sekolah.unit.length ? sekolah.unit : ['KURIKULUM','KOKURIKULUM','HEM','PSS'];
+  sekolah.pengesah = sekolah.pengesah && sekolah.pengesah.length ? sekolah.pengesah : structuredClone(DEF_SIGN);
+  isiUnitPilihan();
+}
+async function muatLaporan(){
+  const q = await db.collection('sekolah').doc(profil.sekolahId)
+    .collection('laporan').orderBy('tarikh','desc').limit(300).get();
+  laporan = q.docs.map(d=> ({id:d.id, ...d.data()}));
+  lukisSenarai();
+}
+
+function lukisSenarai(){
+  const cari = ($('cari').value||'').toLowerCase();
+  const senarai = laporan.filter(l=> !cari || (l.tajuk||'').toLowerCase().includes(cari));
+  const box = $('senarai');
+
+  if(!senarai.length){
+    box.innerHTML = `<div class="empty">
+      <img src="logo.png" alt="">
+      <b>${cari ? 'Tiada laporan sepadan' : 'Belum ada laporan'}</b>
+      ${cari ? 'Cuba kata kunci lain.' : 'Tekan “Baru” di bawah untuk mula.'}
+    </div>`;
+    return;
+  }
+
+  const tahun = {};
+  senarai.forEach(l=>{
+    const y = (l.tarikh||'').slice(0,4) || 'Tanpa tarikh';
+    (tahun[y] = tahun[y] || []).push(l);
+  });
+
+  box.innerHTML = Object.keys(tahun).sort().reverse().map(y=>`
+    <div class="yr">${y} · ${tahun[y].length} laporan</div>
+    ${tahun[y].map(l=>`
+      <div class="item" data-id="${l.id}">
+        <div class="no"><b>${esc(l.bil||'—')}</b><span>BIL</span></div>
+        <div class="txt">
+          <b>${esc(l.tajuk||'Tanpa tajuk')}</b>
+          <span><span class="chip">${esc(l.unit||'—')}</span>${tarikhPendek(l.tarikh)} · ${esc(l.olehNama||'')}</span>
+        </div>
+      </div>`).join('')}
+  `).join('');
+}
+$('cari').addEventListener('input', lukisSenarai);
+$('senarai').addEventListener('click', e=>{
+  const it = e.target.closest('.item');
+  if(it) buka(it.dataset.id);
+});
+
+function isiUnitPilihan(){
+  const sel = $('fUnit');
+  sel.innerHTML = sekolah.unit.map(u=>`<option>${esc(u)}</option>`).join('');
+}
+
+function baru(){
+  semasa = {id:null, olehUid:uid, olehNama:profil.nama};
+  ['fTajuk','fMasa','fTempat','fSasaran','fNota','fObjektif','fButiran','fKekuatan','fKelemahan','fPenambahbaikan']
+    .forEach(id=> $(id).value = '');
+  $('fTarikh').value = new Date().toISOString().slice(0,10);
+  $('fUnit').selectedIndex = 0;
+  $('fBil').value = bilSeterusnya($('fUnit').value);
+  photos = [null,null,null,null];
+  lukisSlot();
+  $('btnBuang').style.display = 'none';
+}
+
+function bilSeterusnya(unit){
+  const y = new Date().getFullYear().toString();
+  const n = laporan.filter(l=> l.unit===unit && (l.tarikh||'').startsWith(y)).length + 1;
+  return String(n).padStart(2,'0');
+}
+$('fUnit').addEventListener('change', ()=>{
+  if(semasa && !semasa.id) $('fBil').value = bilSeterusnya($('fUnit').value);
+});
+
+async function buka(id){
+  const l = laporan.find(x=>x.id===id);
+  if(!l) return;
+  semasa = {...l};
+  $('fTajuk').value  = l.tajuk||'';
+  $('fTarikh').value = l.tarikh||'';
+  $('fMasa').value   = l.masa||'';
+  $('fTempat').value = l.tempat||'';
+  $('fSasaran').value= l.sasaran||'';
+  $('fBil').value    = l.bil||'';
+  $('fNota').value   = l.nota||'';
+  if(!sekolah.unit.includes(l.unit) && l.unit) sekolah.unit.push(l.unit), isiUnitPilihan();
+  $('fUnit').value   = l.unit || sekolah.unit[0];
+  $('fObjektif').value        = (l.objektif||[]).join('\n');
+  $('fButiran').value         = (l.butiran||[]).join('\n');
+  $('fKekuatan').value        = (l.kekuatan||[]).join('\n');
+  $('fKelemahan').value       = (l.kelemahan||[]).join('\n');
+  $('fPenambahbaikan').value  = (l.penambahbaikan||[]).join('\n');
+
+  photos = await fotoAmbil(id);
+  lukisSlot();
+  const boleh = l.olehUid===uid || profil.peranan==='admin';
+  $('btnBuang').style.display = boleh ? 'flex' : 'none';
+  tab('edit');
+}
+
+function isiBorangKeSemasa(){
+  semasa = semasa || {id:null, olehUid:uid, olehNama:profil.nama};
+  Object.assign(semasa, {
+    tajuk:$('fTajuk').value.trim(),
+    tarikh:$('fTarikh').value,
+    masa:$('fMasa').value.trim(),
+    tempat:$('fTempat').value.trim(),
+    sasaran:$('fSasaran').value.trim(),
+    unit:$('fUnit').value,
+    bil:$('fBil').value.trim(),
+    nota:$('fNota').value.trim(),
+    objektif:lines($('fObjektif').value),
+    butiran:lines($('fButiran').value),
+    kekuatan:lines($('fKekuatan').value),
+    kelemahan:lines($('fKelemahan').value),
+    penambahbaikan:lines($('fPenambahbaikan').value)
+  });
+}
+
+$('btnSimpan').onclick = async ()=>{
+  isiBorangKeSemasa();
+  if(!semasa.tajuk) return toast('Isi nama program dahulu.','err');
+  const b = $('btnSimpan'); b.disabled = true;
+  try{
+    const col = db.collection('sekolah').doc(profil.sekolahId).collection('laporan');
+    const data = {...semasa};
+    delete data.id;
+    data.dikemas = firebase.firestore.FieldValue.serverTimestamp();
+    data.olehUid = semasa.olehUid || uid;
+    data.olehNama = semasa.olehNama || profil.nama;
+
+    let id = semasa.id;
+    if(id){ await col.doc(id).update(data) }
+    else  { data.dicipta = firebase.firestore.FieldValue.serverTimestamp();
+            const ref = await col.add(data); id = ref.id; semasa.id = id }
+
+    await fotoSimpan(id, photos);
+    await muatLaporan();
+    $('btnBuang').style.display = 'flex';
+    toast('Laporan disimpan.','ok');
+  }catch(e){
+    toast('Gagal simpan: ' + e.message, 'err', 5000);
+  }finally{ b.disabled = false }
+};
+
+$('btnBuang').onclick = async ()=>{
+  if(!semasa || !semasa.id) return;
+  if(!confirm('Padam laporan ini? Tindakan ini kekal.')) return;
+  try{
+    await db.collection('sekolah').doc(profil.sekolahId).collection('laporan').doc(semasa.id).delete();
+    await fotoBuang(semasa.id);
+    semasa = null;
+    await muatLaporan();
+    tab('list');
+    toast('Laporan dipadam.','ok');
+  }catch(e){ toast('Gagal padam: ' + e.message,'err') }
+};
+
+$('btnPratonton').onclick = ()=> tab('view');
+
+/* ===================== GAMBAR ===================== */
+function lukisSlot(){
+  $('photos').innerHTML = photos.map((p,i)=>`
+    <div class="slot ${p?'has':''}" data-i="${i}">
+      ${p ? `<img src="${p}" alt="Gambar ${i+1}"><button class="del" data-del="${i}" aria-label="Buang gambar ${i+1}">×</button>`
+          : `<div class="plus">+</div><div class="cap">Gambar ${i+1}</div>`}
+    </div>`).join('');
+}
+let slotIdx = 0;
+$('photos').addEventListener('click', e=>{
+  const d = e.target.closest('[data-del]');
+  if(d){ photos[+d.dataset.del] = null; lukisSlot(); return }
+  const s = e.target.closest('.slot');
+  if(s){ slotIdx = +s.dataset.i; $('filePhoto').value=''; $('filePhoto').click() }
+});
+$('filePhoto').onchange = async e=>{
+  const f = e.target.files[0]; if(!f) return;
+  try{
+    photos[slotIdx] = await kecilkan(f, 1100, .82);
+    lukisSlot();
+    toast('Gambar ditambah. Ingat tekan Simpan.','ok',2600);
+  }catch(err){ toast(err.message,'err') }
+};
+
+function kecilkan(file, maxPx, q){
+  return new Promise((res,rej)=>{
+    const fr = new FileReader();
+    fr.onerror = ()=> rej(new Error('Gambar tidak dapat dibaca.'));
+    fr.onload = ()=>{
+      const img = new Image();
+      img.onerror = ()=> rej(new Error('Format gambar tidak disokong.'));
+      img.onload = ()=>{
+        const r = Math.min(1, maxPx/Math.max(img.width,img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.width*r); c.height = Math.round(img.height*r);
+        const x = c.getContext('2d');
+        x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height);
+        x.drawImage(img,0,0,c.width,c.height);
+        res(c.toDataURL('image/jpeg', q));
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+
+/* ===================== TETAPAN ===================== */
+function isiTetapan(){
+  $('sNama').value   = sekolah.nama||'';
+  $('sAlamat').value = sekolah.alamat||'';
+  $('sUnit').value   = (sekolah.unit||[]).join(', ');
+  $('sWarna').value  = sekolah.warna||'#0F2247';
+  $('sProv').value   = sekolah.aiProvider||'gemini';
+  isiModel(sekolah.aiModel);
+  $('sKey').value    = sekolah.aiKey||'';
+  $('sPengguna').value = profil.nama||'';
+  $('sKod').value    = profil.sekolahId;
+  $('sPeranan').value= profil.peranan==='admin' ? 'Pentadbir sekolah' : 'Guru';
+  lukisLogo(); lukisPengesah(); kiraFoto();
+
+  const admin = profil.peranan==='admin';
+  ['sNama','sAlamat','sUnit','sWarna','sProv','sModel','sKey','btnLogo','btnLogoDel']
+    .forEach(id=> $(id).disabled = !admin);
+  $('signers').style.pointerEvents = admin ? '' : 'none';
+  $('signers').style.opacity = admin ? '' : '.6';
+}
+function isiModel(pilih){
+  const p = $('sProv').value;
+  $('sModel').innerHTML = MODEL[p].map(m=>`<option>${m}</option>`).join('');
+  if(pilih && MODEL[p].includes(pilih)) $('sModel').value = pilih;
+  $('keyHint').textContent = p==='gemini'
+    ? 'Dapatkan kunci percuma di Google AI Studio (aistudio.google.com/apikey). Kunci ini dikongsi dengan semua guru sekolah anda.'
+    : 'Dapatkan kunci di platform.openai.com. OpenAI mengenakan bayaran mengikut penggunaan.';
+}
+$('sProv').addEventListener('change', ()=> isiModel());
+
+function lukisLogo(){
+  $('logoPrev').innerHTML = sekolah.logo ? `<img src="${sekolah.logo}" alt="">` : 'Tiada logo';
+}
+$('btnLogo').onclick = ()=>{ $('fileLogo').value=''; $('fileLogo').click() };
+$('fileLogo').onchange = async e=>{
+  const f = e.target.files[0]; if(!f) return;
+  try{
+    sekolah.logo = await kecilkan(f, 320, .9);
+    lukisLogo();
+    toast('Logo dipilih. Tekan Simpan tetapan.','ok');
+  }catch(err){ toast(err.message,'err') }
+};
+$('btnLogoDel').onclick = ()=>{ sekolah.logo=''; lukisLogo() };
+
+function lukisPengesah(){
+  $('signers').innerHTML = sekolah.pengesah.map((s,i)=>`
+    <div style="padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--line)">
+      <div class="field" style="margin-bottom:9px">
+        <label>Peranan ${i+1}</label>
+        <input data-s="${i}" data-k="peranan" value="${esc(s.peranan)}">
+      </div>
+      <div class="row">
+        <div class="field" style="margin:0"><label>Nama</label>
+          <input data-s="${i}" data-k="nama" value="${esc(s.nama)}" placeholder="Nama penuh"></div>
+        <div class="field" style="margin:0"><label>Jawatan</label>
+          <input data-s="${i}" data-k="jawatan" value="${esc(s.jawatan)}" placeholder="Guru Perpustakaan dan Media"></div>
+      </div>
+    </div>`).join('');
+}
+$('signers').addEventListener('input', e=>{
+  const t = e.target;
+  if(t.dataset.s !== undefined) sekolah.pengesah[+t.dataset.s][t.dataset.k] = t.value;
+});
+
+$('btnSimpanTetapan').onclick = async ()=>{
+  const b = $('btnSimpanTetapan'); b.disabled = true;
+  try{
+    const namaBaru = $('sPengguna').value.trim();
+    if(namaBaru && namaBaru !== profil.nama){
+      await db.collection('pengguna').doc(uid).update({nama:namaBaru});
+      profil.nama = namaBaru;
+    }
+    if(profil.peranan==='admin'){
+      Object.assign(sekolah, {
+        nama:$('sNama').value.trim(),
+        alamat:$('sAlamat').value.trim(),
+        unit:$('sUnit').value.split(',').map(s=>s.trim().toUpperCase()).filter(Boolean),
+        warna:$('sWarna').value,
+        aiProvider:$('sProv').value,
+        aiModel:$('sModel').value,
+        aiKey:$('sKey').value.trim()
+      });
+      if(!sekolah.unit.length) sekolah.unit = ['KURIKULUM'];
+      const {dicipta, ...simpan} = sekolah;
+      await db.collection('sekolah').doc(profil.sekolahId).set(simpan, {merge:true});
+      isiUnitPilihan();
+    }
+    $('barSub').textContent = (sekolah.nama||profil.sekolahId) + ' · ' + profil.nama;
+    toast('Tetapan disimpan.','ok');
+  }catch(e){ toast('Gagal simpan tetapan: ' + e.message,'err',5000) }
+  finally{ b.disabled = false }
+};
+
+async function kiraFoto(){
+  const k = await fotoKunci();
+  $('fotoInfo').textContent = `${k.length} laporan mempunyai gambar tersimpan dalam peranti ini.`;
+}
+$('btnFotoKosong').onclick = async ()=>{
+  if(!confirm('Kosongkan semua gambar yang tersimpan dalam peranti ini? Laporan di pelayan tidak terjejas.')) return;
+  const d = await dbOpen();
+  d.transaction('foto','readwrite').objectStore('foto').clear();
+  photos = [null,null,null,null];
+  lukisSlot(); kiraFoto();
+  toast('Gambar dalam peranti dikosongkan.','ok');
+};
+
+/* ===================== AI ===================== */
+function binaPrompt(){
+  return `Anda penolong guru sekolah rendah di Malaysia yang menulis One Page Report (OPR) rasmi mengikut format Kementerian Pendidikan Malaysia.
+
+Maklumat aktiviti:
+- Sekolah: ${sekolah.nama || 'sekolah rendah kebangsaan'}
+- Unit: ${$('fUnit').value}
+- Nama program: ${$('fTajuk').value}
+- Tarikh: ${tarikhBM($('fTarikh').value)}
+- Masa: ${$('fMasa').value || 'tidak dinyatakan'}
+- Tempat: ${$('fTempat').value || 'tidak dinyatakan'}
+- Kumpulan sasaran: ${$('fSasaran').value || 'tidak dinyatakan'}
+- Nota guru: ${$('fNota').value || 'tiada'}
+
+Tulis dalam Bahasa Melayu baku dan formal. Setiap ayat lengkap dan padat, 12 hingga 24 patah perkataan. Jangan letak nombor atau simbol bullet di hadapan ayat. Jangan bombastik.
+
+Balas HANYA objek JSON tulen tanpa markdown:
+{"objektif":["3 objektif"],"butiran":["4 butiran pelaksanaan mengikut urutan"],"kekuatan":["3 kekuatan"],"kelemahan":["2 kelemahan yang jujur dan munasabah"],"penambahbaikan":["2 cadangan penambahbaikan yang praktikal"]}`;
+}
+
+async function panggilAI(prompt){
+  const key = (sekolah.aiKey||'').trim();
+  if(!key) throw new Error('Kunci API belum diisi. Minta pentadbir sekolah isi di tab Tetapan.');
+  const prov  = sekolah.aiProvider || 'gemini';
+  const model = sekolah.aiModel || MODEL[prov][0];
+
+  if(prov === 'gemini'){
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        contents:[{parts:[{text:prompt}]}],
+        generationConfig:{ temperature:.7, responseMimeType:'application/json' }
+      })
+    });
+    const j = await r.json();
+    if(!r.ok) throw new Error(j?.error?.message || 'Gemini menolak permintaan (' + r.status + ').');
+    return (j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
+  }
+
+  const r = await fetch('https://api.openai.com/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+    body: JSON.stringify({
+      model, temperature:.7,
+      response_format:{type:'json_object'},
+      messages:[{role:'user', content:prompt}]
+    })
+  });
+  const j = await r.json();
+  if(!r.ok) throw new Error(j?.error?.message || 'OpenAI menolak permintaan (' + r.status + ').');
+  return j.choices?.[0]?.message?.content || '';
+}
+
+function huraiJSON(txt){
+  let t = (txt||'').replace(/```json|```/g,'').trim();
+  const a = t.indexOf('{'), b = t.lastIndexOf('}');
+  if(a<0||b<0) throw new Error('Balasan AI tidak difahami.');
+  return JSON.parse(t.slice(a,b+1));
+}
+
+$('btnAI').onclick = async ()=>{
+  if(!$('fTajuk').value.trim()){ $('fTajuk').focus(); return toast('Isi nama program dahulu.','err') }
+  const b = $('btnAI'); b.disabled = true; b.textContent = 'AI sedang menulis…';
+  toast('Menjana isi kandungan laporan…','wait',0);
+  try{
+    const j = huraiJSON(await panggilAI(binaPrompt()));
+    const put = (id,arr)=> $(id).value = (arr||[]).join('\n');
+    put('fObjektif', j.objektif);
+    put('fButiran', j.butiran);
+    put('fKekuatan', j.kekuatan);
+    put('fKelemahan', j.kelemahan);
+    put('fPenambahbaikan', j.penambahbaikan);
+    toast('Siap. Semak dan sunting ayat sebelum simpan.','ok');
+  }catch(e){ toast(e.message,'err',6000) }
+  finally{ b.disabled=false; b.textContent='Jana dengan AI' }
+};
+
+$('btnUjiAI').onclick = async ()=>{
+  const b = $('btnUjiAI'); b.disabled = true;
+  const simpan = {...sekolah};
+  Object.assign(sekolah, {aiProvider:$('sProv').value, aiModel:$('sModel').value, aiKey:$('sKey').value.trim()});
+  toast('Menguji sambungan…','wait',0);
+  try{
+    await panggilAI('Balas JSON ini sahaja: {"ok":true}');
+    toast('Sambungan AI berjaya.','ok');
+  }catch(e){ Object.assign(sekolah, simpan); toast(e.message,'err',6000) }
+  finally{ b.disabled = false }
+};
+
+/* ===================== RENDER HALAMAN A4 ===================== */
+function render(){
+  const l = semasa || {};
+  const warna = sekolah.warna || '#0F2247';
+  $('page').style.setProperty('--pc', warna);
+
+  $('pSekolah').textContent = (sekolah.nama||'NAMA SEKOLAH').toUpperCase();
+  $('pAlamat').textContent  = sekolah.alamat||'';
+  $('pUnit').textContent    = (l.unit||'UNIT').toUpperCase();
+  $('pBil').textContent     = 'Bilangan ' + (l.bil||'01');
+  $('pLogo').innerHTML      = sekolah.logo ? `<img src="${sekolah.logo}" alt="">` : '';
+  $('pTajuk').textContent   = (l.tajuk||'NAMA PROGRAM').toUpperCase();
+  $('pTarikh').textContent  = tarikhBM(l.tarikh);
+  $('pMasa').textContent    = l.masa||'—';
+  $('pTempat').textContent  = l.tempat||'—';
+  $('pSasaran').textContent = l.sasaran||'—';
+
+  const ul = (id, arr)=> $(id).innerHTML = (arr&&arr.length)
+    ? arr.map(x=>`<li>${esc(x)}</li>`).join('')
+    : '<li style="color:#A5B2C0">—</li>';
+  ul('pObjektif', l.objektif);
+  ul('pButiran', l.butiran);
+  ul('pKekuatan', l.kekuatan);
+  ul('pKelemahan', l.kelemahan);
+  ul('pPenambahbaikan', l.penambahbaikan);
+
+  $('pShots').innerHTML = photos.map((p,i)=>
+    `<div class="p-shot">${p?`<img src="${p}" alt="">`:`<span>Gambar ${i+1}</span>`}</div>`).join('');
+
+  const aktif = (sekolah.pengesah||[]).filter(s=> (s.nama||'').trim());
+  $('pSign').innerHTML = aktif.map(s=>`
+    <div class="s">
+      <em>${esc(s.peranan)}:</em><hr>
+      <b>${esc(s.nama)}</b>
+      <span>${esc(s.jawatan)}</span>
+      <span>${esc(sekolah.nama||'')}</span>
+    </div>`).join('');
+
+  skalaPentas();
+  ukurMuat();
+}
+
+$('fScale').addEventListener('input', e=>{
+  const v = e.target.value;
+  $('scaleVal').textContent = v + '%';
+  $('page').style.setProperty('--sc', v/100);
+  local.set('ezopr.skala', v);
+  ukurMuat();
+});
+
+function skalaPentas(){
+  const stage = document.querySelector('.stage');
+  if(!stage) return;
+  const avail = stage.clientWidth - 24;
+  const w = $('page').offsetWidth || 794;
+  const k = Math.min(1, avail/w);
+  const inner = $('stageInner');
+  inner.style.transform = `scale(${k})`;
+  inner.style.width  = w + 'px';
+  inner.style.height = ($('page').offsetHeight * k) + 'px';
+}
+window.addEventListener('resize', skalaPentas);
+
+function ukurMuat(){
+  const probe = document.createElement('div');
+  probe.style.cssText = 'position:absolute;visibility:hidden;height:297mm;top:0';
+  document.body.appendChild(probe);
+  const a4 = probe.offsetHeight;
+  probe.remove();
+
+  const p = $('page');
+  const guna = p.scrollHeight;
+  const pct = Math.round(guna/a4*100);
+  $('fitBar').style.width = Math.min(100,pct) + '%';
+  const lebih = guna > a4 + 2;
+  $('fit').classList.toggle('over', lebih);
+  $('fitLabel').textContent = lebih ? `Melimpah ${pct-100}% — kecilkan teks` : `Muat 1 halaman · ${pct}%`;
+}
+
+/* ===================== CETAK & PDF ===================== */
+$('btnCetak').onclick = ()=>{ render(); setTimeout(()=>window.print(), 150) };
+
+function muatSkrip(src){
+  return new Promise((res,rej)=>{
+    if([...document.scripts].some(s=>s.src===src)) return res();
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = ()=>rej(new Error('Gagal memuatkan pustaka PDF. Semak sambungan internet.'));
+    document.head.appendChild(s);
+  });
+}
+
+$('btnPdf').onclick = async ()=>{
+  const b = $('btnPdf'); b.disabled = true; b.textContent = 'Menyediakan PDF…';
+  try{
+    render();
+    await muatSkrip('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+    await muatSkrip('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+
+    const el = $('page');
+    const asal = $('stageInner').style.transform;
+    $('stageInner').style.transform = 'none';
+
+    const canvas = await html2canvas(el, {scale:2, backgroundColor:'#ffffff', useCORS:true, logging:false});
+    $('stageInner').style.transform = asal;
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p','mm','a4');
+    pdf.addImage(canvas.toDataURL('image/jpeg', .92), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+
+    const nama = ('OPR ' + ((semasa&&semasa.tajuk)||'Laporan') + ' ' + ((semasa&&semasa.tarikh)||''))
+      .replace(/[^\w\s\-]/g,'').trim().slice(0,70) + '.pdf';
+
+    const blob = pdf.output('blob');
+    const url  = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = nama; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>{
+      URL.revokeObjectURL(url);
+    }, 4000);
+    toast('PDF dimuat turun.','ok');
+  }catch(e){
+    toast(e.message,'err',5500);
+  }finally{ b.disabled=false; b.textContent='Muat turun PDF' }
+};
+
+/* ===================== MULA ===================== */
+const sk = local.get('ezopr.skala');
+if(sk){ $('fScale').value = sk; $('scaleVal').textContent = sk+'%'; $('page').style.setProperty('--sc', sk/100) }
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=> navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
