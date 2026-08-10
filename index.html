@@ -49,10 +49,13 @@ input,textarea,select,button{font-family:inherit;font-size:16px}
 .screen.on{display:block}
 
 /* ===================== LOG MASUK ===================== */
+/* Nota: display ditetapkan pada #scr-auth.on, bukan #scr-auth, kerana pemilih ID
+   akan mengatasi .screen{display:none} dan menyebabkan dua skrin bertindih. */
+#scr-auth.on{display:flex}
 #scr-auth{
   background:linear-gradient(165deg,#0F2247 0%,#143059 45%,#0A6FBF 100%);
   padding:calc(var(--safe-t) + 34px) 22px calc(var(--safe-b) + 34px);
-  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  flex-direction:column;justify-content:center;align-items:center;
 }
 .auth-box{width:100%;max-width:390px}
 .auth-logo{display:block;width:104px;height:104px;margin:0 auto 18px;border-radius:24px;background:#fff;padding:6px;box-shadow:0 12px 34px rgba(0,0,0,.28)}
@@ -512,7 +515,10 @@ textarea{resize:vertical;line-height:1.55}
           <input id="sKey" type="password" placeholder="AIza…">
           <p class="hint" id="keyHint">Dapatkan kunci percuma di Google AI Studio. Kunci ini dikongsi dengan semua guru sekolah anda supaya semua orang boleh jana laporan.</p>
         </div>
-        <button class="btn btn-ghost btn-sm" id="btnUjiAI" style="width:100%">Uji sambungan AI</button>
+        <div class="btn-row" style="margin-bottom:0">
+          <button class="btn btn-ghost btn-sm" id="btnSenaraiModel" style="width:100%">Muat senarai model</button>
+          <button class="btn btn-ghost btn-sm" id="btnUjiAI" style="width:100%">Uji sambungan AI</button>
+        </div>
       </div>
 
       <div class="card">
@@ -562,7 +568,9 @@ const $ = id => document.getElementById(id);
 const HARI  = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
 const BULAN = ['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
 const MODEL = {
-  gemini: ['gemini-2.5-flash','gemini-2.0-flash','gemini-2.5-flash-lite'],
+  // Senarai sandaran sahaja. Google kerap menamatkan model lama, jadi tekan
+  // "Muat senarai model" dalam Tetapan untuk ambil senarai sebenar dari kunci anda.
+  gemini: ['gemini-3-flash','gemini-3.1-flash-lite','gemini-3.5-flash','gemini-2.5-flash-lite'],
   openai: ['gpt-4o-mini','gpt-4.1-mini','gpt-4o']
 };
 const DEF_SIGN = [
@@ -742,7 +750,7 @@ async function masukApp(user){
         nama:'', alamat:'', warna:'#0F2247', logo:'',
         unit:['KURIKULUM','KOKURIKULUM','HEM','PSS'],
         pengesah: DEF_SIGN,
-        aiProvider:'gemini', aiModel:'gemini-2.5-flash', aiKey:'',
+        aiProvider:'gemini', aiModel:'', aiKey:'',
         pemilik: uid,
         dicipta: firebase.firestore.FieldValue.serverTimestamp()
       });
@@ -1045,15 +1053,17 @@ function isiTetapan(){
   lukisLogo(); lukisPengesah(); kiraFoto();
 
   const admin = profil.peranan==='admin';
-  ['sNama','sAlamat','sUnit','sWarna','sProv','sModel','sKey','btnLogo','btnLogoDel']
+  ['sNama','sAlamat','sUnit','sWarna','sProv','sModel','sKey','btnLogo','btnLogoDel','btnSenaraiModel']
     .forEach(id=> $(id).disabled = !admin);
   $('signers').style.pointerEvents = admin ? '' : 'none';
   $('signers').style.opacity = admin ? '' : '.6';
 }
 function isiModel(pilih){
   const p = $('sProv').value;
-  $('sModel').innerHTML = MODEL[p].map(m=>`<option>${m}</option>`).join('');
-  if(pilih && MODEL[p].includes(pilih)) $('sModel').value = pilih;
+  const senarai = MODEL[p].slice();
+  if(pilih && !senarai.includes(pilih)) senarai.unshift(pilih);
+  $('sModel').innerHTML = senarai.map(m=>`<option>${esc(m)}</option>`).join('');
+  if(pilih) $('sModel').value = pilih;
   $('keyHint').textContent = p==='gemini'
     ? 'Dapatkan kunci percuma di Google AI Studio (aistudio.google.com/apikey). Kunci ini dikongsi dengan semua guru sekolah anda.'
     : 'Dapatkan kunci di platform.openai.com. OpenAI mengenakan bayaran mengikut penggunaan.';
@@ -1156,23 +1166,67 @@ Balas HANYA objek JSON tulen tanpa markdown:
 {"objektif":["3 objektif"],"butiran":["4 butiran pelaksanaan mengikut urutan"],"kekuatan":["3 kekuatan"],"kelemahan":["2 kelemahan yang jujur dan munasabah"],"penambahbaikan":["2 cadangan penambahbaikan yang praktikal"]}`;
 }
 
+/* Ambil senarai model sebenar daripada kunci API — Google kerap menamatkan
+   model lama, jadi jangan bergantung pada nama yang dihardcode. */
+async function senaraiModelGemini(key){
+  const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models?key='
+    + encodeURIComponent(key) + '&pageSize=200');
+  const j = await r.json();
+  if(!r.ok) throw new Error(j?.error?.message || 'Gagal mendapatkan senarai model.');
+  return (j.models||[])
+    .filter(m => (m.supportedGenerationMethods||[]).includes('generateContent'))
+    .map(m => (m.name||'').replace(/^models\//,''))
+    .filter(n => n && !/embedding|aqa|image|tts|audio|video|veo|imagen|learnlm/i.test(n))
+    .sort();
+}
+
+function pilihModelTerbaik(senarai){
+  return senarai.find(n => /flash/i.test(n) && !/lite|preview|exp|thinking/i.test(n))
+      || senarai.find(n => /flash/i.test(n))
+      || senarai[0];
+}
+
+$('btnSenaraiModel').onclick = async ()=>{
+  const b = $('btnSenaraiModel'); b.disabled = true;
+  const key = $('sKey').value.trim();
+  try{
+    if(!key) throw new Error('Isi kunci API dahulu.');
+    if($('sProv').value !== 'gemini')
+      throw new Error('Senarai automatik hanya untuk Gemini. Untuk OpenAI, pilih model dari senarai.');
+    const senarai = await senaraiModelGemini(key);
+    if(!senarai.length) throw new Error('Tiada model yang tersedia untuk kunci ini.');
+    MODEL.gemini = senarai;
+    $('sModel').innerHTML = senarai.map(m=>`<option>${esc(m)}</option>`).join('');
+    $('sModel').value = pilihModelTerbaik(senarai);
+    toast(senarai.length + ' model dijumpai. Tekan Simpan tetapan.','ok',4200);
+  }catch(e){ toast(e.message,'err',6500) }
+  finally{ b.disabled = false }
+};
+
 async function panggilAI(prompt){
   const key = (sekolah.aiKey||'').trim();
   if(!key) throw new Error('Kunci API belum diisi. Minta pentadbir sekolah isi di tab Tetapan.');
   const prov  = sekolah.aiProvider || 'gemini';
-  const model = sekolah.aiModel || MODEL[prov][0];
+  let model   = sekolah.aiModel || MODEL[prov][0];
 
   if(prov === 'gemini'){
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`,{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        contents:[{parts:[{text:prompt}]}],
-        generationConfig:{ temperature:.7, responseMimeType:'application/json' }
-      })
-    });
-    const j = await r.json();
-    if(!r.ok) throw new Error(j?.error?.message || 'Gemini menolak permintaan (' + r.status + ').');
-    return (j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
+    try{
+      return await gemini(key, model, prompt);
+    }catch(e){
+      // Model ditamatkan atau tidak wujud — cari ganti dan cuba sekali lagi
+      if(!/no longer available|not found|not supported|is not found/i.test(e.message)) throw e;
+      const senarai = await senaraiModelGemini(key);
+      const ganti = pilihModelTerbaik(senarai);
+      if(!ganti) throw e;
+      const hasil = await gemini(key, ganti, prompt);
+      MODEL.gemini = senarai;
+      sekolah.aiModel = ganti;
+      if(profil.peranan === 'admin'){
+        db.collection('sekolah').doc(profil.sekolahId).update({aiModel:ganti}).catch(()=>{});
+      }
+      toast('Model lama sudah ditamatkan. Ditukar automatik kepada ' + ganti + '.','ok',5200);
+      return hasil;
+    }
   }
 
   const r = await fetch('https://api.openai.com/v1/chat/completions',{
@@ -1187,6 +1241,19 @@ async function panggilAI(prompt){
   const j = await r.json();
   if(!r.ok) throw new Error(j?.error?.message || 'OpenAI menolak permintaan (' + r.status + ').');
   return j.choices?.[0]?.message?.content || '';
+}
+
+async function gemini(key, model, prompt){
+  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`,{
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      contents:[{parts:[{text:prompt}]}],
+      generationConfig:{ temperature:.7, responseMimeType:'application/json' }
+    })
+  });
+  const j = await r.json();
+  if(!r.ok) throw new Error(j?.error?.message || 'Gemini menolak permintaan (' + r.status + ').');
+  return (j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
 }
 
 function huraiJSON(txt){

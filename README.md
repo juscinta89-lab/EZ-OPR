@@ -27,8 +27,15 @@ dimuat naik ke Cloud Storage, hanya disimpan dalam IndexedDB peranti.
 
 1. Buka <https://aistudio.google.com/apikey> → **Create API key**.
 2. Salin kunci (bermula `AIza…`).
-3. Kunci ini dimasukkan kemudian di dalam app, tab **Tetapan → Penjana AI**.
-   Ia disimpan dalam dokumen sekolah supaya semua guru boleh guna.
+3. Dalam app: tab **Tetapan → Penjana AI** → tampal kunci →
+   tekan **Muat senarai model** → pilih model → **Simpan tetapan**.
+
+Butang *Muat senarai model* bertanya terus kepada Google model mana yang
+tersedia untuk kunci anda. Google kerap menamatkan model lama (contohnya
+tier percuma `gemini-2.5-flash` ditutup pada April 2026), jadi jangan
+bergantung pada nama model yang ditaip sendiri. Jika model tersimpan
+ditamatkan semasa app sedang digunakan, app akan cari ganti dan tukar
+sendiri secara automatik.
 
 Jika mahu guna ChatGPT, tukar penyedia kepada OpenAI dan masukkan kunci dari
 <https://platform.openai.com>. OpenAI berbayar mengikut penggunaan.
