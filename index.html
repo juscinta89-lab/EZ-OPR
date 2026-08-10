@@ -60,6 +60,19 @@ input,textarea,select,button{font-family:inherit;font-size:16px}
 .auth-card{background:#fff;border-radius:20px;padding:22px}
 .auth-card h2{margin:0 0 4px;font-size:20px;font-weight:750;letter-spacing:-.3px}
 .auth-card p.sub{margin:0 0 18px;font-size:13px;color:var(--ink-2)}
+.btn-google{
+  background:#fff;border:1px solid var(--line);color:#28323F;font-weight:700;
+  box-shadow:0 1px 2px rgba(19,26,38,.08)
+}
+.btn-google svg{width:20px;height:20px;flex:none}
+.btn-google:active{background:#F4F7FA}
+.auth-swap b{color:#fff;letter-spacing:1px}
+.diag{
+  background:#FBE9E6;border:1px solid #F0C8C2;color:#7C241A;border-radius:12px;
+  padding:12px 14px;font-size:12.8px;line-height:1.55;margin-bottom:16px
+}
+.diag b{display:block;margin-bottom:4px;font-size:13.2px}
+.diag code{background:rgba(124,36,26,.1);padding:1px 5px;border-radius:4px;font-size:12px}
 .auth-swap{text-align:center;margin-top:16px;font-size:13.5px;color:#BBD3EA}
 .auth-swap button{background:none;border:0;color:#fff;font-weight:700;font-size:13.5px;text-decoration:underline;cursor:pointer;padding:4px}
 
@@ -307,34 +320,27 @@ textarea{resize:vertical;line-height:1.55}
 
     <div class="auth-card">
       <h2 id="aTitle">Log masuk</h2>
-      <p class="sub" id="aSub">Guna akaun sekolah anda.</p>
+      <p class="sub" id="aSub">Guna akaun Google MOE / DELIMa sekolah anda.</p>
 
-      <div class="field" id="wrapNama" style="display:none">
-        <label for="aNama">Nama penuh</label>
-        <input id="aNama" autocomplete="name" placeholder="ALIMIN BIN ABU BAKAR">
-      </div>
-      <div class="field">
-        <label for="aEmel">E-mel</label>
-        <input id="aEmel" type="email" autocomplete="email" placeholder="guru@sekolah.edu.my">
-      </div>
-      <div class="field">
-        <label for="aKata">Kata laluan</label>
-        <input id="aKata" type="password" autocomplete="current-password" placeholder="Sekurang-kurangnya 6 aksara">
-      </div>
-      <div class="field" id="wrapKod" style="display:none">
-        <label for="aKod">Kod sekolah</label>
-        <input id="aKod" placeholder="skbelukar" autocapitalize="none">
-        <p class="hint">Guru pertama yang mendaftar dengan kod ini menjadi pentadbir. Guru lain masukkan kod yang sama untuk sertai sekolah yang sudah wujud.</p>
-      </div>
+      <div id="diag" class="diag hide"></div>
 
-      <button class="btn btn-main" id="btnAuth">Log masuk</button>
-      <button class="btn btn-ghost btn-sm" id="btnLupa" style="width:100%;margin-top:9px;background:none;border:0;color:var(--ink-2)">Lupa kata laluan?</button>
+      <button class="btn btn-google" id="btnGoogle">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-2.8-.4-4H24v7.3h12.1c-.2 2-1.6 5-4.5 7l-.1.3 6.5 5 .5.1c4.1-3.8 6.6-9.4 6.6-15.7"/>
+          <path fill="#34A853" d="M24 46c5.9 0 10.9-1.9 14.5-5.3l-6.9-5.4c-1.8 1.3-4.3 2.2-7.6 2.2-5.8 0-10.7-3.8-12.5-9.1l-.3.1-6.7 5.2-.1.3C8 41.4 15.4 46 24 46"/>
+          <path fill="#FBBC05" d="M11.5 28.4c-.5-1.4-.7-2.9-.7-4.4s.3-3 .7-4.4v-.3l-6.8-5.3-.2.1A22 22 0 002 24c0 3.5.9 6.9 2.5 9.9z"/>
+          <path fill="#EA4335" d="M24 9.5c4.1 0 6.9 1.8 8.5 3.3l6.2-6C34.9 3.3 29.9 1 24 1 15.4 1 8 6 4.5 14.1l7 5.5C13.3 14.3 18.2 9.5 24 9.5"/>
+        </svg>
+        Log masuk dengan Google
+      </button>
+
+      <p class="hint" style="text-align:center;margin-top:14px">
+        Akaun pertama yang log masuk menjadi pentadbir sekolah.
+        Guru lain yang log masuk selepas itu terus disenaraikan sebagai guru.
+      </p>
     </div>
 
-    <p class="auth-swap">
-      <span id="swapText">Belum ada akaun?</span>
-      <button id="btnSwap">Daftar sekarang</button>
-    </p>
+    <p class="auth-swap">Kod sekolah: <b id="kodTag">—</b></p>
   </div>
 </div>
 
@@ -545,9 +551,9 @@ textarea{resize:vertical;line-height:1.55}
 <input type="file" id="fileLogo" accept="image/*" hidden>
 
 <script src="config.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js" onerror="window.EZOPR_SDK_GAGAL='app'"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js" onerror="window.EZOPR_SDK_GAGAL='auth'"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js" onerror="window.EZOPR_SDK_GAGAL='firestore'"></script>
 <script>
 /* =====================================================================
    ez-OPR
@@ -569,7 +575,10 @@ let auth, db, uid = null, profil = null, sekolah = null;
 let laporan = [];        // senarai ringkas
 let semasa = null;       // laporan yang sedang disunting
 let photos = [null,null,null,null];
-let daftarMod = false;
+
+/* Kod sekolah — ditetapkan dalam config.js, boleh diatasi dengan ?s=kodlain */
+const KOD = (new URLSearchParams(location.search).get('s')
+            || window.EZOPR_KOD_SEKOLAH || 'dba2164').toLowerCase();
 
 $('verTag').textContent = 'v' + (window.EZOPR_VERSI || '1.0.0');
 
@@ -640,109 +649,151 @@ async function fotoKunci(){
 }
 
 /* ===================== FIREBASE ===================== */
-try{
-  firebase.initializeApp(window.EZOPR_FIREBASE);
-  auth = firebase.auth();
-  db   = firebase.firestore();
-  db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
-}catch(e){
-  toast('Konfigurasi Firebase belum diisi dalam config.js', 'err', 0);
+function diag(tajuk, isi){
+  const d = $('diag');
+  d.innerHTML = `<b>${tajuk}</b>${isi}`;
+  d.classList.remove('hide');
+  $('btnGoogle').disabled = true;
 }
 
-auth && auth.onAuthStateChanged(async u=>{
+function mula(){
+  // 1. SDK berjaya dimuat turun?
+  if(window.EZOPR_SDK_GAGAL || typeof firebase === 'undefined'
+     || !firebase.auth || !firebase.firestore){
+    return diag('Pustaka Firebase tidak dapat dimuat turun',
+      'Peranti ini tidak dapat menghubungi <code>gstatic.com</code>. Semak sambungan internet, '
+      + 'atau rangkaian sekolah mungkin menyekat domain itu — cuba guna data mudah alih.');
+  }
+
+  // 2. config.js sudah diisi?
+  const c = window.EZOPR_FIREBASE || {};
+  if(!c.apiKey || String(c.apiKey).startsWith('MASUKKAN') || !c.projectId
+     || String(c.projectId).startsWith('projek-anda')){
+    return diag('config.js belum diisi',
+      'Buka fail <code>config.js</code> dan gantikan nilai <code>window.EZOPR_FIREBASE</code> '
+      + 'dengan konfigurasi projek Firebase anda (Project settings → Your apps → Web app).');
+  }
+
+  // 3. Mulakan
+  try{
+    firebase.initializeApp(c);
+    auth = firebase.auth();
+    db   = firebase.firestore();
+  }catch(e){
+    return diag('Firebase gagal dimulakan', e.message);
+  }
+  db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+  auth.getRedirectResult().catch(e=> toast(ralatAuth(e),'err',7000));
+  auth.onAuthStateChanged(kendaliAuth);
+}
+
+async function kendaliAuth(u){
   if(!u){ uid=null; profil=null; sekolah=null; tunjuk('auth'); return }
+
+  // Sekat domain jika disenaraikan dalam config.js
+  const izin = window.EZOPR_DOMAIN_DIBENARKAN || [];
+  if(izin.length){
+    const dom = (u.email||'').split('@')[1] || '';
+    if(!izin.includes(dom)){
+      await auth.signOut();
+      return diag('Akaun ini tidak dibenarkan',
+        'Sila log masuk menggunakan akaun rasmi <code>@' + esc(izin[0]) + '</code>.');
+    }
+  }
+
   uid = u.uid;
   try{
-    const snap = await db.collection('pengguna').doc(uid).get();
-    if(!snap.exists){ await auth.signOut(); toast('Profil pengguna tidak dijumpai.','err'); return }
-    profil = snap.data();
-    await muatSekolah();
-    await muatLaporan();
-    $('barSub').textContent = (sekolah.nama || profil.sekolahId) + ' · ' + (profil.nama||'');
-    tunjuk('app');
-    tab('list');
+    await masukApp(u);
   }catch(e){
-    toast('Gagal memuatkan data: ' + e.message, 'err');
+    if(e.code === 'permission-denied'){
+      await auth.signOut();
+      return diag('Peraturan Firestore belum ditampal',
+        'Buka Firebase Console → Firestore Database → Rules, tampal isi fail '
+        + '<code>firestore.rules</code>, kemudian tekan <b>Publish</b>.');
+    }
+    if(e.code === 'unavailable' || e.code === 'failed-precondition'){
+      await auth.signOut();
+      return diag('Pangkalan data Firestore belum dicipta',
+        'Buka Firebase Console → Build → Firestore Database → <b>Create database</b>.');
+    }
+    toast('Gagal memuatkan data: ' + e.message, 'err', 6000);
   }
-});
+}
+
+async function masukApp(user){
+  let snap = await db.collection('pengguna').doc(uid).get();
+
+  // Kali pertama guru ini log masuk — cipta profil secara automatik
+  if(!snap.exists){
+    const sekolahRef = db.collection('sekolah').doc(KOD);
+    const ada = (await sekolahRef.get()).exists;
+
+    await db.collection('pengguna').doc(uid).set({
+      nama: user.displayName || (user.email||'').split('@')[0],
+      emel: user.email || '',
+      foto: user.photoURL || '',
+      sekolahId: KOD,
+      peranan: ada ? 'guru' : 'admin',
+      dicipta: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    if(!ada){
+      await sekolahRef.set({
+        nama:'', alamat:'', warna:'#0F2247', logo:'',
+        unit:['KURIKULUM','KOKURIKULUM','HEM','PSS'],
+        pengesah: DEF_SIGN,
+        aiProvider:'gemini', aiModel:'gemini-2.5-flash', aiKey:'',
+        pemilik: uid,
+        dicipta: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      toast('Sekolah ' + KOD.toUpperCase() + ' dicipta. Anda pentadbir — lengkapkan tab Tetapan.','ok',5600);
+    }else{
+      toast('Selamat datang. Anda kini disenaraikan sebagai guru sekolah ini.','ok',4200);
+    }
+    snap = await db.collection('pengguna').doc(uid).get();
+  }
+
+  profil = snap.data();
+  await muatSekolah();
+  await muatLaporan();
+  $('barSub').textContent = (sekolah.nama || profil.sekolahId) + ' · ' + (profil.nama||'');
+  $('diag').classList.add('hide');
+  tunjuk('app');
+  tab('list');
+}
 
 function tunjuk(s){
   $('scr-auth').classList.toggle('on', s==='auth');
   $('scr-app').classList.toggle('on', s==='app');
 }
 
-/* ===================== AUTH ===================== */
-$('btnSwap').onclick = ()=>{
-  daftarMod = !daftarMod;
-  $('aTitle').textContent = daftarMod ? 'Daftar akaun' : 'Log masuk';
-  $('aSub').textContent   = daftarMod ? 'Satu akaun untuk satu guru.' : 'Guna akaun sekolah anda.';
-  $('btnAuth').textContent = daftarMod ? 'Daftar' : 'Log masuk';
-  $('wrapNama').style.display = daftarMod ? 'block' : 'none';
-  $('wrapKod').style.display  = daftarMod ? 'block' : 'none';
-  $('swapText').textContent   = daftarMod ? 'Sudah ada akaun?' : 'Belum ada akaun?';
-  $('btnSwap').textContent    = daftarMod ? 'Log masuk' : 'Daftar sekarang';
-  $('btnLupa').style.display  = daftarMod ? 'none' : 'block';
-};
-
-$('btnAuth').onclick = async ()=>{
-  const emel = $('aEmel').value.trim(), kata = $('aKata').value;
-  if(!emel || !kata) return toast('Isi e-mel dan kata laluan.','err');
-
-  const b = $('btnAuth'); b.disabled = true;
+/* ===================== AUTH — Google Sign-In ===================== */
+$('btnGoogle').onclick = async ()=>{
+  const b = $('btnGoogle'); b.disabled = true;
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt:'select_account' });
   try{
-    if(daftarMod){
-      const nama = $('aNama').value.trim();
-      const kod  = $('aKod').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'');
-      if(!nama) throw new Error('Isi nama penuh.');
-      if(!kod)  throw new Error('Isi kod sekolah.');
-
-      const sekolahRef = db.collection('sekolah').doc(kod);
-      const ada = (await sekolahRef.get()).exists;
-
-      const cred = await auth.createUserWithEmailAndPassword(emel, kata);
-      await db.collection('pengguna').doc(cred.user.uid).set({
-        nama, emel, sekolahId: kod,
-        peranan: ada ? 'guru' : 'admin',
-        dicipta: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      if(!ada){
-        await sekolahRef.set({
-          nama:'', alamat:'', warna:'#0F2247', logo:'',
-          unit:['KURIKULUM','KOKURIKULUM','HEM','PSS'],
-          pengesah: DEF_SIGN,
-          aiProvider:'gemini', aiModel:'gemini-2.5-flash', aiKey:'',
-          pemilik: cred.user.uid,
-          dicipta: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        toast('Sekolah baharu dicipta. Anda pentadbir — lengkapkan tab Tetapan.','ok',5200);
-      }
-    }else{
-      await auth.signInWithEmailAndPassword(emel, kata);
-    }
+    await auth.signInWithPopup(provider);
   }catch(e){
-    toast(ralatAuth(e), 'err', 5000);
+    // Tetingkap timbul kerap disekat dalam PWA dan pelayar terbenam —
+    // beralih kepada aliran ubah hala.
+    if(['auth/popup-blocked','auth/popup-closed-by-user','auth/cancelled-popup-request',
+        'auth/operation-not-supported-in-this-environment'].includes(e.code)){
+      try{ return await auth.signInWithRedirect(provider) }
+      catch(e2){ toast(ralatAuth(e2),'err',7000) }
+    }else{
+      toast(ralatAuth(e),'err',7000);
+    }
   }finally{ b.disabled = false }
-};
-
-$('btnLupa').onclick = async ()=>{
-  const emel = $('aEmel').value.trim();
-  if(!emel) return toast('Isi e-mel dahulu, kemudian tekan sekali lagi.','err');
-  try{
-    await auth.sendPasswordResetEmail(emel);
-    toast('Pautan set semula kata laluan dihantar ke e-mel anda.','ok',5000);
-  }catch(e){ toast(ralatAuth(e),'err') }
 };
 
 function ralatAuth(e){
   const m = {
-    'auth/invalid-email':'Format e-mel tidak sah.',
-    'auth/user-not-found':'Akaun tidak dijumpai.',
-    'auth/wrong-password':'Kata laluan salah.',
-    'auth/invalid-credential':'E-mel atau kata laluan salah.',
-    'auth/email-already-in-use':'E-mel ini sudah didaftarkan.',
-    'auth/weak-password':'Kata laluan perlu sekurang-kurangnya 6 aksara.',
+    'auth/unauthorized-domain':'Domain ini belum dibenarkan. Buka Firebase Console → Authentication → Settings → Authorized domains, tambah domain app anda.',
+    'auth/operation-not-allowed':'Log masuk Google belum diaktifkan. Buka Firebase Console → Authentication → Sign-in method → Google → Enable.',
     'auth/network-request-failed':'Tiada sambungan internet.',
-    'auth/too-many-requests':'Terlalu banyak cubaan. Cuba lagi sebentar.'
+    'auth/too-many-requests':'Terlalu banyak cubaan. Cuba lagi sebentar.',
+    'auth/popup-closed-by-user':'Log masuk dibatalkan.'
   };
   return m[e.code] || e.message;
 }
@@ -989,7 +1040,7 @@ function isiTetapan(){
   isiModel(sekolah.aiModel);
   $('sKey').value    = sekolah.aiKey||'';
   $('sPengguna').value = profil.nama||'';
-  $('sKod').value    = profil.sekolahId;
+  $('sKod').value    = (profil.sekolahId||KOD).toUpperCase();
   $('sPeranan').value= profil.peranan==='admin' ? 'Pentadbir sekolah' : 'Guru';
   lukisLogo(); lukisPengesah(); kiraFoto();
 
@@ -1307,6 +1358,9 @@ if(sk){ $('fScale').value = sk; $('scaleVal').textContent = sk+'%'; $('page').st
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=> navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
+
+$('kodTag').textContent = KOD.toUpperCase();
+mula();
 </script>
 </body>
 </html>

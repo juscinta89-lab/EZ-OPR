@@ -13,11 +13,15 @@ dimuat naik ke Cloud Storage, hanya disimpan dalam IndexedDB peranti.
 ## 1. Sediakan Firebase (5 minit)
 
 1. Buka <https://console.firebase.google.com> → **Add project**.
-2. **Build → Authentication → Get started → Sign-in method → Email/Password → Enable**.
+2. **Build → Authentication → Get started → Sign-in method → Google → Enable**
+   (pilih e-mel sokongan projek → Save).
 3. **Build → Firestore Database → Create database → Start in production mode**.
 4. **Firestore → Rules** → tampal isi fail `firestore.rules` → **Publish**.
 5. **Project settings → Your apps → Web (`</>`)** → daftar app → salin objek config.
 6. Buka `config.js`, gantikan nilai `window.EZOPR_FIREBASE` dengan config tadi.
+7. Kod sekolah sudah ditetapkan kepada `dba2164` dalam `config.js`.
+   Jika mahu hadkan kepada akaun MOE sahaja, isi
+   `window.EZOPR_DOMAIN_DIBENARKAN = ["moe-dl.edu.my"];`
 
 ## 2. Sediakan kunci AI percuma
 
@@ -40,14 +44,15 @@ Jika mahu guna ChatGPT, tukar penyedia kepada OpenAI dan masukkan kunci dari
 ## 4. Guna app
 
 **Pentadbir (guru pertama):**
-1. Buka app → **Daftar sekarang**.
-2. Isi nama, e-mel, kata laluan dan **kod sekolah** (contoh `skbelukar`).
-   Guru pertama yang guna kod itu menjadi pentadbir.
-3. Tab **Tetapan** → isi nama sekolah, alamat, logo, warna, senarai unit,
+1. Buka app → **Log masuk dengan Google** menggunakan akaun MOE / DELIMa anda.
+   Tiada pendaftaran; profil dicipta secara automatik.
+   Akaun **pertama** yang log masuk menjadi pentadbir sekolah `dba2164`.
+2. Tab **Tetapan** → isi nama sekolah, alamat, logo, warna, senarai unit,
    tiga pengesah, dan kunci API → **Simpan tetapan**.
 
-**Guru lain:** daftar dengan **kod sekolah yang sama**. Mereka terus mewarisi
-logo, warna dan nama pengesah — jadi semua laporan sekolah keluar seragam.
+**Guru lain:** cukup tekan **Log masuk dengan Google**. Mereka terus masuk ke
+sekolah yang sama dan mewarisi logo, warna dan nama pengesah — jadi semua
+laporan sekolah keluar seragam.
 
 **Buat laporan:** Baru → isi maklumat → tambah 4 gambar → **Jana dengan AI** →
 semak dan sunting ayat → **Simpan** → **Lihat pratonton** → **Muat turun PDF**.
@@ -73,7 +78,7 @@ Ini pertukaran yang disengajakan supaya app kekal percuma sepenuhnya.
 ## Struktur data Firestore
 
 ```
-pengguna/{uid}              → nama, emel, sekolahId, peranan
+pengguna/{uid}              → nama, emel, foto, sekolahId, peranan
 sekolah/{kod}               → nama, alamat, logo, warna, unit[], pengesah[],
                               aiProvider, aiModel, aiKey
 sekolah/{kod}/laporan/{id}  → tajuk, tarikh, masa, tempat, sasaran, unit, bil,
