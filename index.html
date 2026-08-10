@@ -208,6 +208,39 @@ textarea{resize:vertical;line-height:1.55}
 }
 .logo-prev img{width:100%;height:100%;object-fit:contain}
 
+/* ===================== EDITOR GAMBAR ===================== */
+.modal{
+  position:fixed;inset:0;z-index:150;background:rgba(11,18,30,.72);
+  backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;
+  animation:fade .2s
+}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal-box{
+  background:var(--bg);width:100%;max-width:520px;border-radius:22px 22px 0 0;
+  padding:18px 18px calc(var(--safe-b) + 18px);max-height:94vh;overflow:auto;
+  animation:naik .28s cubic-bezier(.2,.8,.2,1)
+}
+@keyframes naik{from{transform:translateY(24px)}to{transform:none}}
+.modal-head{display:flex;align-items:center;margin-bottom:14px}
+.modal-head b{flex:1;font-size:17px;font-weight:750}
+.icon-btn.dark{background:var(--line);color:var(--ink);font-size:20px}
+.ed-stage{
+  position:relative;width:100%;aspect-ratio:4/3;border-radius:12px;overflow:hidden;
+  background:#243044;touch-action:none;cursor:grab
+}
+.ed-stage:active{cursor:grabbing}
+.ed-stage canvas{display:block;width:100%;height:100%}
+.ed-grid{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(to right,transparent calc(33.33% - .5px),rgba(255,255,255,.32) calc(33.33% - .5px),rgba(255,255,255,.32) calc(33.33% + .5px),transparent calc(33.33% + .5px)),
+    linear-gradient(to right,transparent calc(66.66% - .5px),rgba(255,255,255,.32) calc(66.66% - .5px),rgba(255,255,255,.32) calc(66.66% + .5px),transparent calc(66.66% + .5px)),
+    linear-gradient(to bottom,transparent calc(33.33% - .5px),rgba(255,255,255,.32) calc(33.33% - .5px),rgba(255,255,255,.32) calc(33.33% + .5px),transparent calc(33.33% + .5px)),
+    linear-gradient(to bottom,transparent calc(66.66% - .5px),rgba(255,255,255,.32) calc(66.66% - .5px),rgba(255,255,255,.32) calc(66.66% + .5px),transparent calc(66.66% + .5px))
+}
+.ed-tools{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ed-tools .btn{width:100%;padding:10px 6px;font-size:13px}
+
 /* ===================== STATUS ===================== */
 .toast{
   position:fixed;left:50%;transform:translateX(-50%) translateY(-14px);
@@ -280,11 +313,11 @@ textarea{resize:vertical;line-height:1.55}
 
 .p-shots{display:flex;margin-top:auto;padding-top:4mm}
 .p-shot{
-  flex:1;height:33mm;border:.9pt solid #C6D0DB;overflow:hidden;background:#F0F3F6;
+  flex:1;height:34.7mm;border:.9pt solid #C6D0DB;overflow:hidden;background:#F0F3F6;
   display:flex;align-items:center;justify-content:center;margin-right:2.2mm
 }
 .p-shot:last-child{margin-right:0}
-.p-shot img{width:100%;height:100%;object-fit:cover}
+.p-shot img{width:100%;height:100%;object-fit:contain}
 .p-shot span{font-size:calc(7pt * var(--sc,1));color:#A5B2C0}
 
 .p-sign{display:flex;margin-top:7mm}
@@ -493,9 +526,22 @@ textarea{resize:vertical;line-height:1.55}
       </div>
 
       <div class="card">
-        <h2>Pengesah laporan</h2>
-        <p class="hint" style="margin:-6px 0 14px">Kosongkan nama jika ruangan itu tidak diperlukan.</p>
+        <h2>Pengesah laporan saya</h2>
+        <p class="hint" style="margin:-6px 0 14px">
+          Nama ini muncul pada laporan anda sahaja. Guru lain ada senarai mereka sendiri.
+          Kosongkan nama jika ruangan itu tidak diperlukan.
+        </p>
         <div id="signers"></div>
+        <button class="btn btn-ghost btn-sm" id="btnTemplat" style="width:100%">Salin semula templat sekolah</button>
+      </div>
+
+      <div class="card" id="cardTemplat">
+        <h2>Templat pengesah sekolah</h2>
+        <p class="hint" style="margin:-6px 0 14px">
+          Nilai permulaan untuk guru yang baharu log masuk. Mengubahnya tidak menjejaskan
+          senarai guru yang sudah ada.
+        </p>
+        <div id="signersTpl"></div>
       </div>
 
       <div class="card">
@@ -555,6 +601,35 @@ textarea{resize:vertical;line-height:1.55}
 
 <input type="file" id="filePhoto" accept="image/*" hidden>
 <input type="file" id="fileLogo" accept="image/*" hidden>
+
+<!-- ============================ EDITOR GAMBAR ============================ -->
+<div class="modal hide" id="editor">
+  <div class="modal-box">
+    <div class="modal-head">
+      <b>Laraskan gambar</b>
+      <button class="icon-btn dark" id="edTutup" aria-label="Tutup">&times;</button>
+    </div>
+    <div class="ed-stage">
+      <canvas id="edCanvas"></canvas>
+      <div class="ed-grid"></div>
+    </div>
+    <p class="hint" style="text-align:center;margin:10px 0 12px">
+      Seret gambar untuk gerakkan. Cubit dua jari atau guna gelangsar untuk zum.
+    </p>
+    <div class="field" style="margin-bottom:12px">
+      <input id="edZoom" type="range" min="0" max="100" value="0" style="padding:0;border:0;background:none">
+    </div>
+    <div class="ed-tools">
+      <button class="btn btn-ghost btn-sm" id="edPutar">Putar 90&deg;</button>
+      <button class="btn btn-ghost btn-sm" id="edPenuh">Muat penuh</button>
+      <button class="btn btn-ghost btn-sm" id="edIsi">Isi bingkai</button>
+    </div>
+    <div class="btn-row" style="margin:14px 0 0">
+      <button class="btn btn-ghost" id="edBatal">Batal</button>
+      <button class="btn btn-main" id="edGuna">Guna gambar</button>
+    </div>
+  </div>
+</div>
 
 <script src="config.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js" onerror="window.EZOPR_SDK_GAGAL='app'"></script>
@@ -763,6 +838,14 @@ async function masukApp(user){
 
   profil = snap.data();
   await muatSekolah();
+
+  // Setiap guru ada senarai pengesah sendiri. Kali pertama, salin templat sekolah
+  // dan isikan nama guru itu pada ruangan "Disediakan oleh".
+  if(!Array.isArray(profil.pengesah) || !profil.pengesah.length){
+    profil.pengesah = structuredClone(sekolah.pengesah || DEF_SIGN);
+    if(profil.pengesah[0] && !profil.pengesah[0].nama) profil.pengesah[0].nama = profil.nama || '';
+    db.collection('pengguna').doc(uid).update({pengesah: profil.pengesah}).catch(()=>{});
+  }
   await muatLaporan();
   $('barSub').textContent = (sekolah.nama || profil.sekolahId) + ' · ' + (profil.nama||'');
   $('diag').classList.add('hide');
@@ -993,26 +1076,39 @@ $('btnBuang').onclick = async ()=>{
 $('btnPratonton').onclick = ()=> tab('view');
 
 /* ===================== GAMBAR ===================== */
+/* Setiap slot menyimpan { asal, hasil, z, x, y, rot } supaya potongan boleh
+   dilaraskan semula tanpa kehilangan kualiti. Data lama (string) masih disokong. */
+const KELUAR_W = 1280, KELUAR_H = 960;          // 4:3, sepadan bingkai laporan
+const srcHasil = p => !p ? null : (typeof p === 'string' ? p : p.hasil);
+const srcAsal  = p => !p ? null : (typeof p === 'string' ? p : (p.asal || p.hasil));
+
 function lukisSlot(){
-  $('photos').innerHTML = photos.map((p,i)=>`
-    <div class="slot ${p?'has':''}" data-i="${i}">
-      ${p ? `<img src="${p}" alt="Gambar ${i+1}"><button class="del" data-del="${i}" aria-label="Buang gambar ${i+1}">×</button>`
+  $('photos').innerHTML = photos.map((p,i)=>{
+    const s = srcHasil(p);
+    return `<div class="slot ${s?'has':''}" data-i="${i}">
+      ${s ? `<img src="${s}" alt="Gambar ${i+1}"><button class="del" data-del="${i}" aria-label="Buang gambar ${i+1}">&times;</button>`
           : `<div class="plus">+</div><div class="cap">Gambar ${i+1}</div>`}
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
+
 let slotIdx = 0;
 $('photos').addEventListener('click', e=>{
   const d = e.target.closest('[data-del]');
   if(d){ photos[+d.dataset.del] = null; lukisSlot(); return }
   const s = e.target.closest('.slot');
-  if(s){ slotIdx = +s.dataset.i; $('filePhoto').value=''; $('filePhoto').click() }
+  if(!s) return;
+  slotIdx = +s.dataset.i;
+  // Slot berisi terus buka editor; slot kosong minta fail dahulu.
+  if(photos[slotIdx]) bukaEditor(srcAsal(photos[slotIdx]), photos[slotIdx]);
+  else { $('filePhoto').value=''; $('filePhoto').click() }
 });
+
 $('filePhoto').onchange = async e=>{
   const f = e.target.files[0]; if(!f) return;
   try{
-    photos[slotIdx] = await kecilkan(f, 1100, .82);
-    lukisSlot();
-    toast('Gambar ditambah. Ingat tekan Simpan.','ok',2600);
+    const asal = await kecilkan(f, 1600, .88);   // asal disimpan untuk sunting semula
+    bukaEditor(asal, null);
   }catch(err){ toast(err.message,'err') }
 };
 
@@ -1038,6 +1134,157 @@ function kecilkan(file, maxPx, q){
   });
 }
 
+/* ---------- Editor potongan ---------- */
+const ed = { img:null, asal:null, z:1, x:0, y:0, rot:0, zMin:1 };
+
+function bukaEditor(dataURL, sedia){
+  const img = new Image();
+  img.onerror = ()=> toast('Gambar tidak dapat dipaparkan.','err');
+  img.onload = ()=>{
+    ed.img = img; ed.asal = dataURL;
+    ed.rot = (sedia && sedia.rot) || 0;
+    kiraHadZum();
+    if(sedia && typeof sedia.z === 'number'){
+      ed.z = sedia.z; ed.x = sedia.x || 0; ed.y = sedia.y || 0;
+    }else{
+      // Gambar menegak dibuka pada "muat penuh" supaya tiada bahagian hilang
+      const tegak = img.height > img.width * 1.15;
+      ed.z = tegak ? ed.zMin : 1; ed.x = 0; ed.y = 0;
+    }
+    segarkanZum();
+    $('editor').classList.remove('hide');
+    requestAnimationFrame(lukisEditor);
+  };
+  img.src = dataURL;
+}
+
+function dimensiDiputar(){
+  const balik = ed.rot % 2 === 1;
+  return balik ? [ed.img.height, ed.img.width] : [ed.img.width, ed.img.height];
+}
+function kiraHadZum(){
+  const [iw,ih] = dimensiDiputar();
+  const isi  = Math.max(KELUAR_W/iw, KELUAR_H/ih);   // z = 1 bermaksud isi bingkai
+  const muat = Math.min(KELUAR_W/iw, KELUAR_H/ih);   // seluruh gambar kelihatan
+  ed.zMin = muat / isi;
+}
+function apitGerak(){
+  const [iw,ih] = dimensiDiputar();
+  const s = Math.max(KELUAR_W/iw, KELUAR_H/ih) * ed.z;
+  const mx = Math.max(0,(iw*s - KELUAR_W)/2) / KELUAR_W;
+  const my = Math.max(0,(ih*s - KELUAR_H)/2) / KELUAR_H;
+  ed.x = Math.max(-mx, Math.min(mx, ed.x));
+  ed.y = Math.max(-my, Math.min(my, ed.y));
+}
+
+function lukisKe(ctx, W, H){
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0,0,W,H);
+  if(!ed.img) return;
+  const [iw,ih] = dimensiDiputar();
+  const s = Math.max(W/iw, H/ih) * ed.z;
+  ctx.save();
+  ctx.translate(W/2 + ed.x*W, H/2 + ed.y*H);
+  ctx.rotate(ed.rot * Math.PI/2);
+  ctx.scale(s, s);
+  ctx.drawImage(ed.img, -ed.img.width/2, -ed.img.height/2);
+  ctx.restore();
+}
+
+function lukisEditor(){
+  const c = $('edCanvas');
+  const lebar = c.clientWidth || 320;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  c.width  = Math.round(lebar * dpr);
+  c.height = Math.round(lebar * 3/4 * dpr);
+  apitGerak();
+  lukisKe(c.getContext('2d'), c.width, c.height);
+}
+function segarkanZum(){
+  $('edZoom').value = Math.round((ed.z - ed.zMin) / (3 - ed.zMin) * 100);
+}
+
+$('edZoom').addEventListener('input', e=>{
+  ed.z = ed.zMin + (e.target.value/100) * (3 - ed.zMin);
+  lukisEditor();
+});
+$('edPutar').onclick = ()=>{
+  ed.rot = (ed.rot + 1) % 4;
+  kiraHadZum();
+  ed.z = Math.max(ed.z, ed.zMin);
+  segarkanZum(); lukisEditor();
+};
+$('edPenuh').onclick = ()=>{ ed.z = ed.zMin; ed.x = ed.y = 0; segarkanZum(); lukisEditor() };
+$('edIsi').onclick   = ()=>{ ed.z = 1;       ed.x = ed.y = 0; segarkanZum(); lukisEditor() };
+
+/* Seret dan cubit dua jari */
+const jari = new Map();
+let seretAsal = null;
+const pentas = document.querySelector('.ed-stage');
+
+function pusatJari(){
+  if(!jari.size) return {x:0,y:0};
+  let sx=0, sy=0;
+  jari.forEach(p=>{ sx+=p.x; sy+=p.y });
+  return {x:sx/jari.size, y:sy/jari.size};
+}
+function jarakJari(){
+  if(jari.size < 2) return 0;
+  const [a,b] = [...jari.values()];
+  return Math.hypot(a.x-b.x, a.y-b.y);
+}
+function tandaAsal(){
+  seretAsal = {x:ed.x, y:ed.y, z:ed.z, jarak:jarakJari(), pusat:pusatJari()};
+}
+
+pentas.addEventListener('pointerdown', e=>{
+  pentas.setPointerCapture(e.pointerId);
+  jari.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  tandaAsal();
+});
+pentas.addEventListener('pointermove', e=>{
+  if(!jari.has(e.pointerId) || !seretAsal) return;
+  jari.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  const r = pentas.getBoundingClientRect();
+  if(jari.size >= 2 && seretAsal.jarak > 0){
+    ed.z = Math.max(ed.zMin, Math.min(3, seretAsal.z * (jarakJari() / seretAsal.jarak)));
+    segarkanZum();
+  }
+  const p = pusatJari();
+  ed.x = seretAsal.x + (p.x - seretAsal.pusat.x) / r.width;
+  ed.y = seretAsal.y + (p.y - seretAsal.pusat.y) / r.height;
+  lukisEditor();
+});
+['pointerup','pointercancel'].forEach(ev=>
+  pentas.addEventListener(ev, e=>{
+    jari.delete(e.pointerId);
+    if(jari.size) tandaAsal(); else seretAsal = null;
+  }));
+
+function tutupEditor(){
+  $('editor').classList.add('hide');
+  jari.clear(); seretAsal = null; ed.img = null;
+}
+$('edTutup').onclick = tutupEditor;
+$('edBatal').onclick = tutupEditor;
+
+$('edGuna').onclick = ()=>{
+  const c = document.createElement('canvas');
+  c.width = KELUAR_W; c.height = KELUAR_H;
+  apitGerak();
+  lukisKe(c.getContext('2d'), KELUAR_W, KELUAR_H);
+  photos[slotIdx] = {
+    asal: ed.asal,
+    hasil: c.toDataURL('image/jpeg', .86),
+    z: ed.z, x: ed.x, y: ed.y, rot: ed.rot
+  };
+  tutupEditor();
+  lukisSlot();
+  toast('Gambar dikemas kini. Ingat tekan Simpan.','ok',2600);
+};
+
+window.addEventListener('resize', ()=>{ if(ed.img) lukisEditor() });
+
 /* ===================== TETAPAN ===================== */
 function isiTetapan(){
   $('sNama').value   = sekolah.nama||'';
@@ -1055,8 +1302,7 @@ function isiTetapan(){
   const admin = profil.peranan==='admin';
   ['sNama','sAlamat','sUnit','sWarna','sProv','sModel','sKey','btnLogo','btnLogoDel','btnSenaraiModel']
     .forEach(id=> $(id).disabled = !admin);
-  $('signers').style.pointerEvents = admin ? '' : 'none';
-  $('signers').style.opacity = admin ? '' : '.6';
+  $('cardTemplat').classList.toggle('hide', !admin);
 }
 function isiModel(pilih){
   const p = $('sProv').value;
@@ -1084,34 +1330,47 @@ $('fileLogo').onchange = async e=>{
 };
 $('btnLogoDel').onclick = ()=>{ sekolah.logo=''; lukisLogo() };
 
-function lukisPengesah(){
-  $('signers').innerHTML = sekolah.pengesah.map((s,i)=>`
+function borangPengesah(senarai, tag){
+  return senarai.map((s,i)=>`
     <div style="padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--line)">
       <div class="field" style="margin-bottom:9px">
         <label>Peranan ${i+1}</label>
-        <input data-s="${i}" data-k="peranan" value="${esc(s.peranan)}">
+        <input data-t="${tag}" data-s="${i}" data-k="peranan" value="${esc(s.peranan)}">
       </div>
       <div class="row">
         <div class="field" style="margin:0"><label>Nama</label>
-          <input data-s="${i}" data-k="nama" value="${esc(s.nama)}" placeholder="Nama penuh"></div>
+          <input data-t="${tag}" data-s="${i}" data-k="nama" value="${esc(s.nama)}" placeholder="Nama penuh"></div>
         <div class="field" style="margin:0"><label>Jawatan</label>
-          <input data-s="${i}" data-k="jawatan" value="${esc(s.jawatan)}" placeholder="Guru Perpustakaan dan Media"></div>
+          <input data-t="${tag}" data-s="${i}" data-k="jawatan" value="${esc(s.jawatan)}" placeholder="Guru Perpustakaan dan Media"></div>
       </div>
     </div>`).join('');
 }
-$('signers').addEventListener('input', e=>{
+function lukisPengesah(){
+  $('signers').innerHTML    = borangPengesah(profil.pengesah, 'saya');
+  $('signersTpl').innerHTML = borangPengesah(sekolah.pengesah, 'tpl');
+}
+$('btnTemplat').onclick = ()=>{
+  if(!confirm('Ganti senarai pengesah anda dengan templat sekolah?')) return;
+  profil.pengesah = structuredClone(sekolah.pengesah || DEF_SIGN);
+  lukisPengesah();
+  toast('Templat disalin. Tekan Simpan tetapan.','ok');
+};
+function kendaliPengesah(e){
   const t = e.target;
-  if(t.dataset.s !== undefined) sekolah.pengesah[+t.dataset.s][t.dataset.k] = t.value;
-});
+  if(t.dataset.s === undefined) return;
+  const senarai = t.dataset.t === 'tpl' ? sekolah.pengesah : profil.pengesah;
+  senarai[+t.dataset.s][t.dataset.k] = t.value;
+}
+$('signers').addEventListener('input', kendaliPengesah);
+$('signersTpl').addEventListener('input', kendaliPengesah);
 
 $('btnSimpanTetapan').onclick = async ()=>{
   const b = $('btnSimpanTetapan'); b.disabled = true;
   try{
     const namaBaru = $('sPengguna').value.trim();
-    if(namaBaru && namaBaru !== profil.nama){
-      await db.collection('pengguna').doc(uid).update({nama:namaBaru});
-      profil.nama = namaBaru;
-    }
+    const ubah = {pengesah: profil.pengesah};
+    if(namaBaru && namaBaru !== profil.nama){ ubah.nama = namaBaru; profil.nama = namaBaru }
+    await db.collection('pengguna').doc(uid).update(ubah);
     if(profil.peranan==='admin'){
       Object.assign(sekolah, {
         nama:$('sNama').value.trim(),
@@ -1318,10 +1577,12 @@ function render(){
   ul('pKelemahan', l.kelemahan);
   ul('pPenambahbaikan', l.penambahbaikan);
 
-  $('pShots').innerHTML = photos.map((p,i)=>
-    `<div class="p-shot">${p?`<img src="${p}" alt="">`:`<span>Gambar ${i+1}</span>`}</div>`).join('');
+  $('pShots').innerHTML = photos.map((p,i)=>{
+    const s = srcHasil(p);
+    return `<div class="p-shot">${s?`<img src="${s}" alt="">`:`<span>Gambar ${i+1}</span>`}</div>`;
+  }).join('');
 
-  const aktif = (sekolah.pengesah||[]).filter(s=> (s.nama||'').trim());
+  const aktif = ((profil && profil.pengesah) || sekolah.pengesah || []).filter(s=> (s.nama||'').trim());
   $('pSign').innerHTML = aktif.map(s=>`
     <div class="s">
       <em>${esc(s.peranan)}:</em><hr>

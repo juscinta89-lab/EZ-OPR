@@ -64,6 +64,17 @@ laporan sekolah keluar seragam.
 **Buat laporan:** Baru → isi maklumat → tambah 4 gambar → **Jana dengan AI** →
 semak dan sunting ayat → **Simpan** → **Lihat pratonton** → **Muat turun PDF**.
 
+**Gambar:** selepas memilih fail, editor terbuka. Seret untuk gerakkan, cubit
+dua jari atau guna gelangsar untuk zum, dan *Putar 90°* untuk gambar yang
+terbalik. *Muat penuh* memaparkan seluruh gambar dengan jalur putih; *Isi
+bingkai* memenuhkan bingkai dengan memotong tepi. Gambar menegak dibuka pada
+*Muat penuh* secara automatik. Ketik gambar yang sudah ada untuk melaraskannya
+semula — potongan tidak merosakkan fail asal.
+
+**Pengesah:** setiap guru ada senarai *Disediakan / Disemak / Disahkan oleh*
+sendiri di tab Tetapan. Ia tidak bercampur dengan guru lain. Pentadbir boleh
+menetapkan templat sekolah yang menjadi nilai permulaan bagi guru baharu.
+
 ## 5. Pasang di telefon
 
 - **Android (Chrome):** menu ⋮ → *Add to Home screen*.
