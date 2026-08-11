@@ -1969,7 +1969,8 @@ $('btnDrive').onclick = async ()=>{
     }
 
     if(fail.webViewLink){
-      $('driveLink').innerHTML = 'Tersimpan dalam Drive — '
+      const akaun = (auth.currentUser && auth.currentUser.email) || '';
+      $('driveLink').innerHTML = 'Tersimpan dalam Drive ' + esc(akaun) + ' — '
         + `<a href="${fail.webViewLink}" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700">buka fail</a>`;
     }
     if(semasa && semasa.id){
@@ -1979,11 +1980,23 @@ $('btnDrive').onclick = async ()=>{
     toast('PDF dimuat naik ke Google Drive.','ok',4200);
   }catch(e){
     if(/has not been used in project|is disabled|accessNotConfigured/i.test(e.message)){
+      // Nombor projek diambil terus daripada mesej Google supaya pautan
+      // membuka projek yang betul, bukan projek terakhir yang dibuka guru.
+      const no = (e.message.match(/project\s+(\d+)/) || [])[1] || '';
+      const url = 'https://console.cloud.google.com/apis/library/drive.googleapis.com'
+                + (no ? '?project=' + no : '');
       $('driveLink').innerHTML =
-        'Google Drive API belum diaktifkan untuk projek Firebase ini. Buka '
-        + '<a href="https://console.cloud.google.com/apis/library/drive.googleapis.com" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700">Google Cloud Console</a>'
-        + ' → pilih projek yang sama → <b>Enable</b>, tunggu seminit, kemudian cuba lagi.';
-      toast('Google Drive API belum diaktifkan. Lihat arahan di bawah butang.','err',6000);
+        'Google Drive API belum aktif untuk projek <b>' + (no || 'Firebase anda') + '</b>.<br>'
+        + '<a href="' + url + '" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700">Buka halaman Enable untuk projek ini</a><br>'
+        + 'Pastikan nombor projek di penjuru atas halaman itu ialah <b>' + (no || '—') + '</b>. '
+        + 'Selepas menekan Enable, tunggu 2–5 minit sebelum cuba semula.';
+      toast('Drive API belum aktif untuk projek ' + (no || 'ini') + '. Lihat pautan di bawah butang.','err',7000);
+    }else if(/admin_policy_enforced|blocked|access_denied|disallowed_useragent/i.test(e.message)){
+      $('driveLink').innerHTML =
+        'Pentadbir Google Workspace domain anda menyekat app pihak ketiga daripada '
+        + 'mengakses Drive. Minta pentadbir DELIMa membenarkan app ini, atau log masuk '
+        + 'ez-OPR menggunakan akaun Google peribadi untuk menyimpan ke Drive peribadi.';
+      toast('Akses Drive disekat oleh dasar domain anda.','err',7000);
     }else{
       toast(e.message,'err',7000);
     }
