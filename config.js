@@ -5,7 +5,7 @@
 /* 1. Konfigurasi Firebase
    Firebase Console → Project settings → Your apps → Web app → Config      */
 window.EZOPR_FIREBASE = {
-apiKey: "AIzaSyCjBpS0cWNRbgX8gFjABzIO8FwMtR1tJNw",
+  apiKey: "AIzaSyCjBpS0cWNRbgX8gFjABzIO8FwMtR1tJNw",
   authDomain: "ez-opr.firebaseapp.com",
   projectId: "ez-opr",
   storageBucket: "ez-opr.firebasestorage.app",
