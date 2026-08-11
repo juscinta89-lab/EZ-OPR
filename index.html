@@ -260,7 +260,7 @@ textarea{resize:vertical;line-height:1.55}
 /* ===================== STATUS ===================== */
 .toast{
   position:fixed;left:50%;transform:translateX(-50%) translateY(-14px);
-  top:calc(var(--safe-t) + 12px);z-index:200;max-width:calc(100% - 32px);
+  top:calc(var(--safe-t) + 12px);z-index:200;max-width:min(520px, calc(100% - 32px));
   padding:12px 17px;border-radius:13px;font-size:13.5px;font-weight:600;line-height:1.45;
   box-shadow:0 8px 26px rgba(19,26,38,.22);opacity:0;pointer-events:none;transition:.28s
 }
@@ -291,7 +291,8 @@ textarea{resize:vertical;line-height:1.55}
   display:flex;flex-direction:column;box-shadow:0 3px 18px rgba(0,0,0,.2);
   overflow:hidden;
 }
-.p-head{display:flex;border:1.6pt solid var(--pc,#0F2247);overflow:hidden}
+.page > *{flex:none}          /* jangan mampatkan mana-mana blok apabila melimpah */
+.p-head{display:flex;flex:none;border:1.6pt solid var(--pc,#0F2247);overflow:hidden}
 .p-head .lg{width:17mm;flex:none;display:flex;align-items:center;justify-content:center;padding:1.6mm;border-right:1.6pt solid var(--pc,#0F2247)}
 .p-head .lg img{max-width:100%;max-height:14mm;object-fit:contain}
 .p-head .nm{flex:1;padding:2.4mm 4mm;display:flex;flex-direction:column;justify-content:center}
@@ -327,16 +328,16 @@ textarea{resize:vertical;line-height:1.55}
 .p-two > div{flex:1}
 .p-two > div:first-child{padding-right:3mm}
 
-.p-shots{display:flex;margin-top:3mm}
+.p-shots{display:flex;flex:none;margin-top:3mm}
 .p-shot{
-  flex:1;height:34.7mm;border:.9pt solid #C6D0DB;overflow:hidden;background:#F0F3F6;
+  flex:1 1 0;height:34.7mm;border:.9pt solid #C6D0DB;overflow:hidden;background:#F0F3F6;
   display:flex;align-items:center;justify-content:center;margin-right:2.2mm
 }
 .p-shot:last-child{margin-right:0}
 .p-shot img{width:100%;height:100%;object-fit:contain}
 .p-shot span{font-size:calc(7.6pt * var(--sc,1));color:#A5B2C0}
 
-.p-sign{display:flex;margin-top:auto;padding-top:6mm}
+.p-sign{display:flex;flex:none;margin-top:auto;padding-top:6mm}
 .p-sign .s{flex:1;text-align:center;padding:0 3mm}
 .p-sign .s em{font-style:normal;font-size:calc(8.6pt * var(--sc,1));color:#465A72;display:block;margin-bottom:8mm}
 .p-sign .s hr{border:0;border-top:.8pt solid #131A26;margin:0 0 1.2mm}
@@ -1050,7 +1051,7 @@ function tab(name, dariNav){
   window.scrollTo({top:0, behavior:'smooth'});
   if(name==='edit' && dariNav && semasa && semasa.id) { /* kekal */ }
   if(name==='edit' && dariNav && !semasa) baru();
-  if(name==='view'){ isiBorangKeSemasa(); render(); autoMuat(); skalaPentas() }
+  if(name==='view'){ isiBorangKeSemasa(); render(); skalaManual ? pastikanMuat() : autoMuat(); skalaPentas() }
   if(name==='setup') isiTetapan();
   if(name==='list') lukisSenarai();
 }
@@ -1120,6 +1121,7 @@ function isiUnitPilihan(){
 }
 
 function baru(){
+  skalaManual = false;
   semasa = {id:null, olehUid:uid, olehNama:profil.nama};
   ['fTajuk','fMasa','fTempat','fSasaran','fNota','fObjektif','fButiran','fKekuatan','fKelemahan','fPenambahbaikan']
     .forEach(id=> $(id).value = '');
@@ -1763,13 +1765,25 @@ function render(){
   ukurMuat();
 }
 
+let skalaManual = false;    // guru telah melaras sendiri — jangan tulis ganti
+
 $('fScale').addEventListener('input', e=>{
   const v = e.target.value;
+  skalaManual = true;
   $('scaleVal').textContent = v + '%';
   $('page').style.setProperty('--sc', v/100);
   local.set('ezopr.skala', v);
   ukurMuat();
 });
+
+/* Hanya campur tangan apabila kandungan betul-betul melimpah keluar halaman */
+function pastikanMuat(){
+  const p = $('page');
+  if(p.scrollHeight > tinggiA4() + 2){
+    const s = autoMuat();
+    toast('Saiz teks diturunkan ke ' + s + '% supaya muat satu halaman.','wait',4200);
+  }
+}
 
 function skalaPentas(){
   const stage = document.querySelector('.stage');
@@ -1814,7 +1828,7 @@ function autoMuat(){
   ukurMuat();
   return terbaik;
 }
-$('btnAutoMuat').onclick = ()=> autoMuat();
+$('btnAutoMuat').onclick = ()=>{ skalaManual = false; autoMuat() };
 
 function ukurMuat(){
   const a4 = tinggiA4();
@@ -1828,7 +1842,7 @@ function ukurMuat(){
 }
 
 /* ===================== CETAK & PDF ===================== */
-$('btnCetak').onclick = ()=>{ render(); autoMuat(); setTimeout(()=>window.print(), 150) };
+$('btnCetak').onclick = ()=>{ render(); pastikanMuat(); setTimeout(()=>window.print(), 150) };
 
 function muatSkrip(src){
   return new Promise((res,rej)=>{
@@ -1841,7 +1855,7 @@ function muatSkrip(src){
 
 async function binaPdf(){
   render();
-  autoMuat();
+  pastikanMuat();
   await muatSkrip('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
   await muatSkrip('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
 
@@ -1963,7 +1977,17 @@ $('btnDrive').onclick = async ()=>{
         .update({ driveId: fail.id, driveLink: fail.webViewLink || '' }).catch(()=>{});
     }
     toast('PDF dimuat naik ke Google Drive.','ok',4200);
-  }catch(e){ toast(e.message,'err',7000) }
+  }catch(e){
+    if(/has not been used in project|is disabled|accessNotConfigured/i.test(e.message)){
+      $('driveLink').innerHTML =
+        'Google Drive API belum diaktifkan untuk projek Firebase ini. Buka '
+        + '<a href="https://console.cloud.google.com/apis/library/drive.googleapis.com" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700">Google Cloud Console</a>'
+        + ' → pilih projek yang sama → <b>Enable</b>, tunggu seminit, kemudian cuba lagi.';
+      toast('Google Drive API belum diaktifkan. Lihat arahan di bawah butang.','err',6000);
+    }else{
+      toast(e.message,'err',7000);
+    }
+  }
   finally{ b.disabled=false; b.textContent='Save to Google Drive' }
 };
 
