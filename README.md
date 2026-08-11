@@ -19,9 +19,11 @@ dimuat naik ke Cloud Storage, hanya disimpan dalam IndexedDB peranti.
 4. **Firestore → Rules** → tampal isi fail `firestore.rules` → **Publish**.
 5. **Project settings → Your apps → Web (`</>`)** → daftar app → salin objek config.
 6. Buka `config.js`, gantikan nilai `window.EZOPR_FIREBASE` dengan config tadi.
-7. Kod sekolah sudah ditetapkan kepada `dba2164` dalam `config.js`.
-   Jika mahu hadkan kepada akaun MOE sahaja, isi
-   `window.EZOPR_DOMAIN_DIBENARKAN = ["moe-dl.edu.my"];`
+7. `window.EZOPR_KOD_SEKOLAH` dibiarkan kosong — setiap guru memilih
+   sekolahnya sendiri semasa log masuk pertama. Isi hanya jika salinan ini
+   khusus untuk satu sekolah.
+8. Untuk simpanan ke Google Drive: Google Cloud Console → **APIs & Services →
+   Library → Google Drive API → Enable** (projek yang sama dengan Firebase).
 
 ## 2. Sediakan kunci AI percuma
 
@@ -50,16 +52,23 @@ Jika mahu guna ChatGPT, tukar penyedia kepada OpenAI dan masukkan kunci dari
 
 ## 4. Guna app
 
-**Pentadbir (guru pertama):**
-1. Buka app → **Log masuk dengan Google** menggunakan akaun MOE / DELIMa anda.
-   Tiada pendaftaran; profil dicipta secara automatik.
-   Akaun **pertama** yang log masuk menjadi pentadbir sekolah `dba2164`.
-2. Tab **Tetapan** → isi nama sekolah, alamat, logo, warna, senarai unit,
-   tiga pengesah, dan kunci API → **Simpan tetapan**.
+**Pentadbir sekolah:**
+1. **Log masuk dengan Google** → skrin *Sekolah anda* → **Daftar baharu** →
+   isi nama sekolah dan kod (guna kod sekolah KPM, contoh `DBA2164`).
+   Pendaftar menjadi pentadbir sekolah itu.
+2. Tab **Settings** → isi alamat, logo, warna, senarai unit, pengesah dan
+   kunci API → **Save settings**.
+3. Kad **Jemput guru** → **Copy link** → hantar kepada guru lain.
+   Matikan *Benarkan guru baharu menyertai* selepas semua guru mendaftar.
 
-**Guru lain:** cukup tekan **Log masuk dengan Google**. Mereka terus masuk ke
-sekolah yang sama dan mewarisi logo, warna dan nama pengesah — jadi semua
-laporan sekolah keluar seragam.
+**Guru lain:** buka pautan jemputan → **Log masuk dengan Google** → terus masuk.
+Tanpa pautan, mereka boleh taip kod sekolah pada skrin *Sekolah anda*.
+Semua guru mewarisi logo, warna dan templat pengesah — laporan keluar seragam.
+
+**Simpan ke Google Drive:** tab **Preview** → **Save to Google Drive**. Kali
+pertama, Google akan meminta kebenaran. PDF disimpan dalam folder
+*ez-OPR — <nama sekolah>* dalam Drive guru itu sendiri. App hanya boleh
+melihat fail yang diciptanya, bukan fail lain dalam Drive anda.
 
 **Buat laporan:** Baru → isi maklumat → tambah 4 gambar → **Jana dengan AI** →
 semak dan sunting ayat → **Simpan** → **Lihat pratonton** → **Muat turun PDF**.
@@ -96,12 +105,13 @@ Ini pertukaran yang disengajakan supaya app kekal percuma sepenuhnya.
 ## Struktur data Firestore
 
 ```
-pengguna/{uid}              → nama, emel, foto, sekolahId, peranan
+pengguna/{uid}              → nama, emel, foto, sekolahId, peranan, pengesah[]
 sekolah/{kod}               → nama, alamat, logo, warna, unit[], pengesah[],
-                              aiProvider, aiModel, aiKey
+                              aiProvider, aiModel, aiKey, terbuka, pemilik
 sekolah/{kod}/laporan/{id}  → tajuk, tarikh, masa, tempat, sasaran, unit, bil,
                               objektif[], butiran[], kekuatan[], kelemahan[],
-                              penambahbaikan[], olehUid, olehNama
+                              penambahbaikan[], olehUid, olehNama,
+                              driveId, driveLink
 ```
 
 ## Fail
@@ -118,3 +128,25 @@ sekolah/{kod}/laporan/{id}  → tajuk, tarikh, masa, tempat, sasaran, unit, bil,
 
 Selepas mengubah mana-mana fail, naikkan nombor `EZOPR_VERSI` dalam `config.js`
 dan `CACHE` dalam `sw.js` supaya pengguna menerima versi baharu.
+
+
+---
+
+## Berbilang sekolah
+
+Satu pemasangan boleh menampung seberapa banyak sekolah. Setiap sekolah ialah
+satu dokumen di bawah `sekolah/{kod}` dengan laporan, tetapan dan gurunya
+sendiri. Guru sekolah A tidak dapat membaca laporan sekolah B — peraturan
+Firestore menyemak `sekolahId` pada setiap bacaan.
+
+Tiga cara mengagihkan app:
+
+| Cara | Sesuai untuk |
+|---|---|
+| Satu hos, banyak sekolah, pautan `?s=kod` | Menjual langganan; anda urus satu projek Firebase |
+| Satu hos, `EZOPR_KOD_SEKOLAH` diisi | Pemasangan khusus satu sekolah |
+| Sekolah hos sendiri dengan projek Firebase mereka | Sekolah mahu data dalam akaun mereka sendiri |
+
+Pentadbir setiap sekolah mengawal pendaftaran melalui tetapan
+*Benarkan guru baharu menyertai*. Selagi ia dimatikan, kod sekolah yang bocor
+pun tidak membenarkan sesiapa masuk.

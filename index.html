@@ -51,7 +51,18 @@ input,textarea,select,button{font-family:inherit;font-size:16px}
 /* ===================== LOG MASUK ===================== */
 /* Nota: display ditetapkan pada #scr-auth.on, bukan #scr-auth, kerana pemilih ID
    akan mengatasi .screen{display:none} dan menyebabkan dua skrin bertindih. */
-#scr-auth.on{display:flex}
+#scr-auth.on, #scr-onboard.on{display:flex}
+#scr-onboard{
+  background:linear-gradient(165deg,#0F2247 0%,#143059 45%,#0A6FBF 100%);
+  padding:calc(var(--safe-t) + 34px) 22px calc(var(--safe-b) + 34px);
+  flex-direction:column;justify-content:center;align-items:center;
+}
+.seg{display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:12px;margin-bottom:18px}
+.seg button{
+  flex:1;border:0;background:transparent;font-family:inherit;font-size:13px;font-weight:680;
+  color:var(--ink-2);padding:9px 4px;border-radius:9px;cursor:pointer;transition:.16s
+}
+.seg button.on{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(19,26,38,.12)}
 #scr-auth{
   background:linear-gradient(165deg,#0F2247 0%,#143059 45%,#0A6FBF 100%);
   padding:calc(var(--safe-t) + 34px) 22px calc(var(--safe-b) + 34px);
@@ -135,6 +146,8 @@ textarea{resize:vertical;line-height:1.55}
 .btn-danger{background:#fff;border-color:#F0C8C2;color:var(--danger)}
 .btn-sm{padding:9px 13px;font-size:13.5px;border-radius:10px;width:auto}
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}
+.btn-flex{display:flex;gap:10px;margin-bottom:13px}
+.btn-flex .btn{flex:1;min-width:0}
 
 /* ===================== NAV BAWAH (kapsul terapung) ===================== */
 .nav{
@@ -274,7 +287,7 @@ textarea{resize:vertical;line-height:1.55}
 .page{
   width:210mm;height:297mm;background:#fff;color:#000;padding:9mm;
   font-family:Arial,Helvetica,sans-serif;
-  font-size:calc(9pt * var(--sc,1));line-height:1.34;
+  font-size:calc(10.4pt * var(--sc,1));line-height:1.3;
   display:flex;flex-direction:column;box-shadow:0 3px 18px rgba(0,0,0,.2);
   overflow:hidden;
 }
@@ -282,53 +295,53 @@ textarea{resize:vertical;line-height:1.55}
 .p-head .lg{width:17mm;flex:none;display:flex;align-items:center;justify-content:center;padding:1.6mm;border-right:1.6pt solid var(--pc,#0F2247)}
 .p-head .lg img{max-width:100%;max-height:14mm;object-fit:contain}
 .p-head .nm{flex:1;padding:2.4mm 4mm;display:flex;flex-direction:column;justify-content:center}
-.p-head .nm b{font-size:calc(14pt * var(--sc,1));font-weight:800;letter-spacing:.3px;color:var(--pc,#0F2247);line-height:1.12}
-.p-head .nm span{font-size:calc(8.4pt * var(--sc,1));color:#465A72}
+.p-head .nm b{font-size:calc(15.5pt * var(--sc,1));font-weight:800;letter-spacing:.3px;color:var(--pc,#0F2247);line-height:1.12}
+.p-head .nm span{font-size:calc(9.2pt * var(--sc,1));color:#465A72}
 .p-head .un{
   width:36mm;flex:none;background:var(--pc,#0F2247);color:#fff;padding:2.4mm 3mm;
   display:flex;flex-direction:column;justify-content:center;align-items:flex-end;text-align:right
 }
-.p-head .un b{font-size:calc(11pt * var(--sc,1));font-weight:800;letter-spacing:.5px;line-height:1.1}
-.p-head .un span{font-size:calc(8pt * var(--sc,1))}
+.p-head .un b{font-size:calc(12pt * var(--sc,1));font-weight:800;letter-spacing:.5px;line-height:1.1}
+.p-head .un span{font-size:calc(8.8pt * var(--sc,1))}
 
-.p-kind{text-align:center;font-size:calc(8.6pt * var(--sc,1));font-weight:700;letter-spacing:3px;color:#16B5A3;margin:3mm 0 1.4mm}
+.p-kind{text-align:center;font-size:calc(8.8pt * var(--sc,1));font-weight:700;letter-spacing:3px;color:#16B5A3;margin:2.4mm 0 1.2mm}
 .p-title{
   background:var(--pc,#0F2247);color:#fff;border-radius:14mm;text-align:center;
-  padding:2.4mm 6mm;font-size:calc(13pt * var(--sc,1));font-weight:800;letter-spacing:.3px;line-height:1.2
+  padding:2.2mm 6mm;font-size:calc(14.5pt * var(--sc,1));font-weight:800;letter-spacing:.3px;line-height:1.2
 }
 
-.p-meta{display:flex;border:.9pt solid #C6D0DB;margin-top:3mm}
-.p-meta > div{flex:1;padding:1.9mm 2.6mm;border-right:.9pt solid #C6D0DB;min-width:0}
+.p-meta{display:flex;border:.9pt solid #C6D0DB;margin-top:2.4mm}
+.p-meta > div{flex:1;padding:1.7mm 2.4mm;border-right:.9pt solid #C6D0DB;min-width:0}
 .p-meta > div:last-child{border-right:0}
-.p-meta em{display:block;font-style:normal;font-size:calc(6.6pt * var(--sc,1));font-weight:700;letter-spacing:.9px;color:#8496A8;margin-bottom:.7mm}
-.p-meta strong{font-size:calc(8.6pt * var(--sc,1));font-weight:700;display:block}
+.p-meta em{display:block;font-style:normal;font-size:calc(7.2pt * var(--sc,1));font-weight:700;letter-spacing:.9px;color:#8496A8;margin-bottom:.7mm}
+.p-meta strong{font-size:calc(9.6pt * var(--sc,1));font-weight:700;display:block}
 
-.p-sec{margin-top:3mm}
+.p-sec{margin-top:2.6mm}
 .p-sec > h3{
-  margin:0 0 1.6mm;font-size:calc(8.2pt * var(--sc,1));font-weight:800;letter-spacing:1.4px;
+  margin:0 0 1.3mm;font-size:calc(9.4pt * var(--sc,1));font-weight:800;letter-spacing:1.3px;
   color:var(--pc,#0F2247);border-left:2.6pt solid #16B5A3;padding-left:2.4mm;line-height:1.2
 }
-.p-sec ul{margin:0;padding-left:4.6mm}
-.p-sec li{margin-bottom:.9mm;text-align:justify}
-.p-two{display:flex;margin-top:3mm}
+.p-sec ul{margin:0;padding-left:4.4mm}
+.p-sec li{margin-bottom:.7mm;text-align:justify}
+.p-two{display:flex;margin-top:2.6mm}
 .p-two > div{flex:1}
 .p-two > div:first-child{padding-right:3mm}
 
-.p-shots{display:flex;margin-top:auto;padding-top:4mm}
+.p-shots{display:flex;margin-top:3mm}
 .p-shot{
   flex:1;height:34.7mm;border:.9pt solid #C6D0DB;overflow:hidden;background:#F0F3F6;
   display:flex;align-items:center;justify-content:center;margin-right:2.2mm
 }
 .p-shot:last-child{margin-right:0}
 .p-shot img{width:100%;height:100%;object-fit:contain}
-.p-shot span{font-size:calc(7pt * var(--sc,1));color:#A5B2C0}
+.p-shot span{font-size:calc(7.6pt * var(--sc,1));color:#A5B2C0}
 
-.p-sign{display:flex;margin-top:7mm}
+.p-sign{display:flex;margin-top:auto;padding-top:6mm}
 .p-sign .s{flex:1;text-align:center;padding:0 3mm}
-.p-sign .s em{font-style:normal;font-size:calc(7.8pt * var(--sc,1));color:#465A72;display:block;margin-bottom:9mm}
+.p-sign .s em{font-style:normal;font-size:calc(8.6pt * var(--sc,1));color:#465A72;display:block;margin-bottom:8mm}
 .p-sign .s hr{border:0;border-top:.8pt solid #131A26;margin:0 0 1.2mm}
-.p-sign .s b{display:block;font-size:calc(8.2pt * var(--sc,1));font-weight:800;line-height:1.25}
-.p-sign .s span{font-size:calc(7.4pt * var(--sc,1));color:#465A72;display:block;line-height:1.3}
+.p-sign .s b{display:block;font-size:calc(9pt * var(--sc,1));font-weight:800;line-height:1.25}
+.p-sign .s span{font-size:calc(8.2pt * var(--sc,1));color:#465A72;display:block;line-height:1.3}
 
 /* ===================== CETAK ===================== */
 @page{size:A4 portrait;margin:0}
@@ -379,7 +392,49 @@ textarea{resize:vertical;line-height:1.55}
       </p>
     </div>
 
-    <p class="auth-swap">Kod sekolah: <b id="kodTag">—</b></p>
+    <p class="auth-swap">Sistem laporan sekolah</p>
+  </div>
+</div>
+
+<!-- ============================ PILIH SEKOLAH ============================ -->
+<div class="screen" id="scr-onboard">
+  <div class="auth-box">
+    <img src="logo.png" alt="ez-OPR" class="auth-logo">
+    <p class="auth-tag">Satu langkah lagi</p>
+
+    <div class="auth-card">
+      <h2>Sekolah anda</h2>
+      <p class="sub" id="obNama">Sertai sekolah sedia ada atau daftarkan yang baharu.</p>
+
+      <div class="seg">
+        <button data-m="join" class="on">Sertai sekolah</button>
+        <button data-m="new">Daftar baharu</button>
+      </div>
+
+      <div id="obJoin">
+        <div class="field">
+          <label for="obKod">Kod sekolah</label>
+          <input id="obKod" autocapitalize="characters" placeholder="DBA2164">
+          <p class="hint">Minta kod ini daripada pentadbir ez-OPR di sekolah anda.</p>
+        </div>
+        <button class="btn btn-main" id="obSertai">Join school</button>
+      </div>
+
+      <div id="obNew" class="hide">
+        <div class="field">
+          <label for="obNamaSekolah">Nama sekolah</label>
+          <input id="obNamaSekolah" placeholder="SK BELUKAR">
+        </div>
+        <div class="field">
+          <label for="obKodBaru">Kod sekolah</label>
+          <input id="obKodBaru" autocapitalize="characters" placeholder="DBA2164">
+          <p class="hint">Gunakan kod sekolah KPM anda. Guru lain akan memasukkan kod yang sama untuk menyertai.</p>
+        </div>
+        <button class="btn btn-teal" id="obDaftar">Create school</button>
+      </div>
+    </div>
+
+    <p class="auth-swap"><button id="obKeluar">Log masuk dengan akaun lain</button></p>
   </div>
 </div>
 
@@ -441,7 +496,7 @@ textarea{resize:vertical;line-height:1.55}
           <label for="fNota">Nota tambahan untuk AI <span style="font-weight:500">(pilihan)</span></label>
           <textarea id="fNota" rows="2" placeholder="Kerjasama dengan PIBG, penyertaan 120 murid, ada sesi pertandingan bercerita"></textarea>
         </div>
-        <button class="btn btn-teal" id="btnAI">Jana dengan AI</button>
+        <button class="btn btn-teal" id="btnAI">Generate with AI</button>
         <p class="hint">AI menulis objektif, butiran pelaksanaan, kekuatan, kelemahan dan penambahbaikan. Semua ayat boleh disunting selepas dijana.</p>
       </div>
 
@@ -456,11 +511,11 @@ textarea{resize:vertical;line-height:1.55}
         <div class="field"><label for="fPenambahbaikan">Penambahbaikan</label><textarea id="fPenambahbaikan" rows="3"></textarea></div>
       </div>
 
-      <div class="btn-row">
-        <button class="btn btn-ghost" id="btnBuang">Padam laporan</button>
-        <button class="btn btn-main" id="btnSimpan">Simpan</button>
+      <div class="btn-flex">
+        <button class="btn btn-danger" id="btnBuang">Delete</button>
+        <button class="btn btn-main" id="btnSimpan">Save</button>
       </div>
-      <button class="btn btn-blue" id="btnPratonton">Lihat pratonton</button>
+      <button class="btn btn-blue" id="btnPratonton">Preview</button>
     </div>
 
     <!-- ---------- PRATONTON ---------- -->
@@ -471,13 +526,18 @@ textarea{resize:vertical;line-height:1.55}
           <div class="fit-label" id="fitLabel">Muat 1 halaman</div>
         </div>
         <div class="btn-row">
-          <button class="btn btn-main" id="btnPdf">Muat turun PDF</button>
-          <button class="btn btn-ghost" id="btnCetak">Cetak</button>
+          <button class="btn btn-main" id="btnPdf">Download PDF</button>
+          <button class="btn btn-ghost" id="btnCetak">Print</button>
         </div>
+        <button class="btn btn-teal" id="btnDrive" style="margin-bottom:13px">Save to Google Drive</button>
+        <p class="hint" id="driveLink" style="text-align:center;margin:-6px 0 13px"></p>
         <div class="card" style="padding:13px">
-          <label for="fScale">Saiz teks laporan — <span id="scaleVal">100%</span></label>
-          <input id="fScale" type="range" min="80" max="112" step="2" value="100" style="padding:0;border:0;background:none">
-          <p class="hint">Kecilkan sedikit jika penunjuk di atas bertukar merah.</p>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <label for="fScale" style="margin:0;flex:1">Saiz teks laporan — <span id="scaleVal">100%</span></label>
+            <button class="btn btn-ghost btn-sm" id="btnAutoMuat" style="padding:7px 12px">Auto fit</button>
+          </div>
+          <input id="fScale" type="range" min="78" max="132" step="1" value="100" style="padding:0;border:0;background:none">
+          <p class="hint">Auto fit memilih saiz teks terbesar yang masih muat satu halaman.</p>
         </div>
       </div>
 
@@ -518,8 +578,8 @@ textarea{resize:vertical;line-height:1.55}
         <div class="logo-box">
           <div class="logo-prev" id="logoPrev">Tiada logo</div>
           <div style="flex:1">
-            <button class="btn btn-ghost btn-sm" id="btnLogo" style="width:100%;margin-bottom:7px">Pilih logo sekolah</button>
-            <button class="btn btn-ghost btn-sm" id="btnLogoDel" style="width:100%">Buang logo</button>
+            <button class="btn btn-ghost btn-sm" id="btnLogo" style="width:100%;margin-bottom:7px">Choose logo</button>
+            <button class="btn btn-ghost btn-sm" id="btnLogoDel" style="width:100%">Remove logo</button>
           </div>
         </div>
         <div class="field"><label for="sNama">Nama sekolah</label><input id="sNama" placeholder="SK BELUKAR"></div>
@@ -537,7 +597,7 @@ textarea{resize:vertical;line-height:1.55}
           Kosongkan nama jika ruangan itu tidak diperlukan.
         </p>
         <div id="signers"></div>
-        <button class="btn btn-ghost btn-sm" id="btnTemplat" style="width:100%">Salin semula templat sekolah</button>
+        <button class="btn btn-ghost btn-sm" id="btnTemplat" style="width:100%">Copy school template</button>
       </div>
 
       <div class="card" id="cardTemplat">
@@ -567,9 +627,27 @@ textarea{resize:vertical;line-height:1.55}
           <p class="hint" id="keyHint">Dapatkan kunci percuma di Google AI Studio. Kunci ini dikongsi dengan semua guru sekolah anda supaya semua orang boleh jana laporan.</p>
         </div>
         <div class="btn-row" style="margin-bottom:0">
-          <button class="btn btn-ghost btn-sm" id="btnSenaraiModel" style="width:100%">Muat senarai model</button>
-          <button class="btn btn-ghost btn-sm" id="btnUjiAI" style="width:100%">Uji sambungan AI</button>
+          <button class="btn btn-ghost btn-sm" id="btnSenaraiModel" style="width:100%">Load models</button>
+          <button class="btn btn-ghost btn-sm" id="btnUjiAI" style="width:100%">Test AI</button>
         </div>
+      </div>
+
+      <div class="card" id="cardJemput">
+        <h2>Jemput guru</h2>
+        <p class="hint" style="margin:-6px 0 13px">
+          Hantar pautan ini kepada guru lain. Mereka log masuk dengan Google dan terus
+          masuk ke sekolah anda tanpa perlu taip kod.
+        </p>
+        <div class="field">
+          <label for="sPautan">Pautan jemputan</label>
+          <input id="sPautan" readonly>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="btnSalinPautan" style="width:100%;margin-bottom:14px">Copy link</button>
+        <label style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink);font-weight:600">
+          <input type="checkbox" id="sTerbuka" style="width:20px;height:20px;flex:none;padding:0">
+          Benarkan guru baharu menyertai sekolah ini
+        </label>
+        <p class="hint">Matikan selepas semua guru mendaftar untuk menghalang orang luar masuk.</p>
       </div>
 
       <div class="card">
@@ -577,14 +655,14 @@ textarea{resize:vertical;line-height:1.55}
         <div class="field"><label>Nama</label><input id="sPengguna" placeholder="Nama penuh"></div>
         <div class="field"><label>Kod sekolah</label><input id="sKod" disabled></div>
         <div class="field" style="margin-bottom:14px"><label>Peranan</label><input id="sPeranan" disabled></div>
-        <button class="btn btn-main" id="btnSimpanTetapan">Simpan tetapan</button>
+        <button class="btn btn-main" id="btnSimpanTetapan">Save settings</button>
       </div>
 
       <div class="card">
         <h2>Penyimpanan gambar</h2>
         <p class="hint" style="margin:0 0 12px">Semua gambar aktiviti disimpan dalam peranti ini sahaja supaya app kekal pada pelan Firebase percuma.</p>
         <div id="fotoInfo" style="font-size:13px;color:var(--ink-2);margin-bottom:12px"></div>
-        <button class="btn btn-danger btn-sm" id="btnFotoKosong" style="width:100%">Kosongkan semua gambar tersimpan</button>
+        <button class="btn btn-danger btn-sm" id="btnFotoKosong" style="width:100%">Clear stored photos</button>
       </div>
 
       <p class="hint" style="text-align:center">ez-OPR <span id="verTag"></span></p>
@@ -594,13 +672,13 @@ textarea{resize:vertical;line-height:1.55}
 
   <div class="nav">
     <button data-t="list" class="on">
-      <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Laporan</button>
+      <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Reports</button>
     <button data-t="edit">
-      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Baru</button>
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>New</button>
     <button data-t="view">
-      <svg viewBox="0 0 24 24"><path d="M6 3h9l5 5v13a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M15 3v5h5"/></svg>Pratonton</button>
+      <svg viewBox="0 0 24 24"><path d="M6 3h9l5 5v13a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M15 3v5h5"/></svg>Preview</button>
     <button data-t="setup">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-2.7 1.1V21a2 2 0 11-4 0v-.1A1.6 1.6 0 006.5 19.4l-.1.1a2 2 0 11-2.8-2.8l.1-.1A1.6 1.6 0 003 15H3a2 2 0 110-4h.1A1.6 1.6 0 004.6 9.5l-.1-.1a2 2 0 112.8-2.8l.1.1A1.6 1.6 0 009 6.5V6a2 2 0 114 0v.1a1.6 1.6 0 002.7 1.1l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 001.1 2.7H21a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z"/></svg>Tetapan</button>
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-2.7 1.1V21a2 2 0 11-4 0v-.1A1.6 1.6 0 006.5 19.4l-.1.1a2 2 0 11-2.8-2.8l.1-.1A1.6 1.6 0 003 15H3a2 2 0 110-4h.1A1.6 1.6 0 004.6 9.5l-.1-.1a2 2 0 112.8-2.8l.1.1A1.6 1.6 0 009 6.5V6a2 2 0 114 0v.1a1.6 1.6 0 002.7 1.1l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 001.1 2.7H21a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z"/></svg>Settings</button>
   </div>
 </div>
 
@@ -664,9 +742,11 @@ let laporan = [];        // senarai ringkas
 let semasa = null;       // laporan yang sedang disunting
 let photos = [null,null,null,null];
 
-/* Kod sekolah — ditetapkan dalam config.js, boleh diatasi dengan ?s=kodlain */
-const KOD = (new URLSearchParams(location.search).get('s')
-            || window.EZOPR_KOD_SEKOLAH || 'dba2164').toLowerCase();
+/* Kod sekolah cadangan: daripada pautan jemputan ?s=kod, atau nilai lalai
+   dalam config.js. Jika tiada, guru memilih sendiri pada skrin "Sekolah anda". */
+const KOD_CADANGAN = (new URLSearchParams(location.search).get('s')
+            || window.EZOPR_KOD_SEKOLAH || '').toLowerCase().replace(/[^a-z0-9-]/g,'');
+let penggunaGoogle = null;   // disimpan semasa guru memilih sekolah
 
 $('verTag').textContent = 'v' + (window.EZOPR_VERSI || '1.0.0');
 
@@ -811,34 +891,20 @@ async function kendaliAuth(u){
 async function masukApp(user){
   let snap = await db.collection('pengguna').doc(uid).get();
 
-  // Kali pertama guru ini log masuk — cipta profil secara automatik
+  // Guru ini belum terikat dengan mana-mana sekolah
   if(!snap.exists){
-    const sekolahRef = db.collection('sekolah').doc(KOD);
-    const ada = (await sekolahRef.get()).exists;
+    penggunaGoogle = user;
 
-    await db.collection('pengguna').doc(uid).set({
-      nama: user.displayName || (user.email||'').split('@')[0],
-      emel: user.email || '',
-      foto: user.photoURL || '',
-      sekolahId: KOD,
-      peranan: ada ? 'guru' : 'admin',
-      dicipta: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    if(!ada){
-      await sekolahRef.set({
-        nama:'', alamat:'', warna:'#0F2247', logo:'',
-        unit:['KURIKULUM','KOKURIKULUM','HEM','PSS'],
-        pengesah: DEF_SIGN,
-        aiProvider:'gemini', aiModel:'', aiKey:'',
-        pemilik: uid,
-        dicipta: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      toast('Sekolah ' + KOD.toUpperCase() + ' dicipta. Anda pentadbir — lengkapkan tab Tetapan.','ok',5600);
+    // Pautan jemputan atau kod lalai yang sah — terus sertai tanpa soalan
+    if(KOD_CADANGAN && (await db.collection('sekolah').doc(KOD_CADANGAN).get()).exists){
+      await sertaiSekolah(KOD_CADANGAN);
+      snap = await db.collection('pengguna').doc(uid).get();
     }else{
-      toast('Selamat datang. Anda kini disenaraikan sebagai guru sekolah ini.','ok',4200);
+      $('obKod').value = KOD_CADANGAN.toUpperCase();
+      $('obKodBaru').value = KOD_CADANGAN.toUpperCase();
+      tunjuk('onboard');
+      return;
     }
-    snap = await db.collection('pengguna').doc(uid).get();
   }
 
   profil = snap.data();
@@ -859,8 +925,7 @@ async function masukApp(user){
 }
 
 function tunjuk(s){
-  $('scr-auth').classList.toggle('on', s==='auth');
-  $('scr-app').classList.toggle('on', s==='app');
+  ['auth','onboard','app'].forEach(n=> $('scr-'+n).classList.toggle('on', n===s));
 }
 
 /* ===================== AUTH — Google Sign-In ===================== */
@@ -898,6 +963,82 @@ $('btnKeluar').onclick = ()=>{
   if(confirm('Log keluar daripada ez-OPR?')) auth.signOut();
 };
 
+/* ===================== PILIH SEKOLAH ===================== */
+document.querySelectorAll('.seg button').forEach(b=>{
+  b.onclick = ()=>{
+    document.querySelectorAll('.seg button').forEach(x=> x.classList.toggle('on', x===b));
+    $('obJoin').classList.toggle('hide', b.dataset.m !== 'join');
+    $('obNew').classList.toggle('hide', b.dataset.m !== 'new');
+  };
+});
+$('obKeluar').onclick = ()=> auth.signOut();
+
+function bersihKod(v){ return (v||'').toLowerCase().trim().replace(/[^a-z0-9-]/g,'') }
+
+async function sertaiSekolah(kod){
+  const u = penggunaGoogle || auth.currentUser;
+  await db.collection('pengguna').doc(uid).set({
+    nama: u.displayName || (u.email||'').split('@')[0],
+    emel: u.email || '',
+    foto: u.photoURL || '',
+    sekolahId: kod,
+    peranan: 'guru',
+    dicipta: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+$('obSertai').onclick = async ()=>{
+  const b = $('obSertai'); b.disabled = true;
+  try{
+    const kod = bersihKod($('obKod').value);
+    if(!kod) throw new Error('Isi kod sekolah.');
+    const s = await db.collection('sekolah').doc(kod).get();
+    if(!s.exists) throw new Error('Kod sekolah tidak dijumpai. Semak ejaan dengan pentadbir anda.');
+    if(s.data().terbuka === false)
+      throw new Error('Sekolah ini telah menutup pendaftaran guru baharu. Hubungi pentadbir anda.');
+    await sertaiSekolah(kod);
+    await masukApp(penggunaGoogle || auth.currentUser);
+    toast('Selamat datang. Anda kini guru di ' + (s.data().nama || kod.toUpperCase()) + '.','ok',4600);
+  }catch(e){ toast(e.message,'err',6000) }
+  finally{ b.disabled = false }
+};
+
+$('obDaftar').onclick = async ()=>{
+  const b = $('obDaftar'); b.disabled = true;
+  try{
+    const nama = $('obNamaSekolah').value.trim();
+    const kod  = bersihKod($('obKodBaru').value);
+    if(!nama) throw new Error('Isi nama sekolah.');
+    if(kod.length < 3) throw new Error('Kod sekolah perlu sekurang-kurangnya 3 aksara.');
+    if((await db.collection('sekolah').doc(kod).get()).exists)
+      throw new Error('Kod ini sudah digunakan. Pilih kod lain, atau tekan "Sertai sekolah" jika ini sekolah anda.');
+
+    // Dokumen sekolah dicipta dahulu — peraturan Firestore menyemaknya
+    // semasa profil guru dicipta.
+    await db.collection('sekolah').doc(kod).set({
+      nama, alamat:'', warna:'#0F2247', logo:'',
+      unit:['KURIKULUM','KOKURIKULUM','HEM','PSS'],
+      pengesah: DEF_SIGN,
+      aiProvider:'gemini', aiModel:'', aiKey:'',
+      terbuka: true,
+      pemilik: uid,
+      dicipta: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    const u = penggunaGoogle || auth.currentUser;
+    await db.collection('pengguna').doc(uid).set({
+      nama: u.displayName || (u.email||'').split('@')[0],
+      emel: u.email || '', foto: u.photoURL || '',
+      sekolahId: kod, peranan: 'admin',
+      dicipta: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    await masukApp(u);
+    toast('Sekolah didaftarkan. Anda pentadbir — lengkapkan tab Settings.','ok',5600);
+  }catch(e){ toast(e.message,'err',7000) }
+  finally{ b.disabled = false }
+};
+
 /* ===================== NAV ===================== */
 document.querySelectorAll('.nav button').forEach(b=>{
   b.onclick = ()=> tab(b.dataset.t, true);
@@ -909,7 +1050,7 @@ function tab(name, dariNav){
   window.scrollTo({top:0, behavior:'smooth'});
   if(name==='edit' && dariNav && semasa && semasa.id) { /* kekal */ }
   if(name==='edit' && dariNav && !semasa) baru();
-  if(name==='view'){ isiBorangKeSemasa(); render() }
+  if(name==='view'){ isiBorangKeSemasa(); render(); autoMuat(); skalaPentas() }
   if(name==='setup') isiTetapan();
   if(name==='list') lukisSenarai();
 }
@@ -1305,12 +1446,17 @@ function isiTetapan(){
   isiModel(sekolah.aiModel);
   $('sKey').value    = sekolah.aiKey||'';
   $('sPengguna').value = profil.nama||'';
-  $('sKod').value    = (profil.sekolahId||KOD).toUpperCase();
+  $('sKod').value    = (profil.sekolahId||'').toUpperCase();
   $('sPeranan').value= profil.peranan==='admin' ? 'Pentadbir sekolah' : 'Guru';
   lukisLogo(); lukisPengesah(); kiraFoto();
 
+  const asas = location.href.split('?')[0].split('#')[0];
+  $('sPautan').value = asas + '?s=' + profil.sekolahId;
+  $('sTerbuka').checked = sekolah.terbuka !== false;
+
   const admin = profil.peranan==='admin';
-  ['sNama','sAlamat','sUnit','sWarna','sProv','sModel','sKey','btnLogo','btnLogoDel','btnSenaraiModel']
+  $('cardJemput').classList.toggle('hide', !admin);
+  ['sNama','sAlamat','sUnit','sWarna','sProv','sModel','sKey','btnLogo','btnLogoDel','btnSenaraiModel','sTerbuka']
     .forEach(id=> $(id).disabled = !admin);
   $('cardTemplat').classList.toggle('hide', !admin);
 }
@@ -1374,6 +1520,17 @@ function kendaliPengesah(e){
 $('signers').addEventListener('input', kendaliPengesah);
 $('signersTpl').addEventListener('input', kendaliPengesah);
 
+$('btnSalinPautan').onclick = async ()=>{
+  const teks = $('sPautan').value;
+  try{
+    await navigator.clipboard.writeText(teks);
+    toast('Pautan jemputan disalin.','ok');
+  }catch(e){
+    $('sPautan').select(); $('sPautan').setSelectionRange(0, 99999);
+    toast('Tekan lama pada pautan untuk menyalinnya.','wait',4000);
+  }
+};
+
 $('btnSimpanTetapan').onclick = async ()=>{
   const b = $('btnSimpanTetapan'); b.disabled = true;
   try{
@@ -1389,7 +1546,8 @@ $('btnSimpanTetapan').onclick = async ()=>{
         warna:$('sWarna').value,
         aiProvider:$('sProv').value,
         aiModel:$('sModel').value,
-        aiKey:$('sKey').value.trim()
+        aiKey:$('sKey').value.trim(),
+        terbuka:$('sTerbuka').checked
       });
       if(!sekolah.unit.length) sekolah.unit = ['KURIKULUM'];
       const {dicipta, ...simpan} = sekolah;
@@ -1534,7 +1692,7 @@ function huraiJSON(txt){
 
 $('btnAI').onclick = async ()=>{
   if(!$('fTajuk').value.trim()){ $('fTajuk').focus(); return toast('Isi nama program dahulu.','err') }
-  const b = $('btnAI'); b.disabled = true; b.textContent = 'AI sedang menulis…';
+  const b = $('btnAI'); b.disabled = true; b.textContent = 'Generating…';
   toast('Menjana isi kandungan laporan…','wait',0);
   try{
     const j = huraiJSON(await panggilAI(binaPrompt()));
@@ -1546,7 +1704,7 @@ $('btnAI').onclick = async ()=>{
     put('fPenambahbaikan', j.penambahbaikan);
     toast('Siap. Semak dan sunting ayat sebelum simpan.','ok');
   }catch(e){ toast(e.message,'err',6000) }
-  finally{ b.disabled=false; b.textContent='Jana dengan AI' }
+  finally{ b.disabled=false; b.textContent='Generate with AI' }
 };
 
 $('btnUjiAI').onclick = async ()=>{
@@ -1626,13 +1784,40 @@ function skalaPentas(){
 }
 window.addEventListener('resize', skalaPentas);
 
-function ukurMuat(){
+function tinggiA4(){
   const probe = document.createElement('div');
   probe.style.cssText = 'position:absolute;visibility:hidden;height:297mm;top:0';
   document.body.appendChild(probe);
-  const a4 = probe.offsetHeight;
+  const t = probe.offsetHeight;
   probe.remove();
+  return t;
+}
 
+/* Cari saiz teks terbesar yang masih muat satu halaman (carian binari) */
+function autoMuat(){
+  const a4 = tinggiA4();
+  const p = $('page');
+  const min = +$('fScale').min, max = +$('fScale').max;
+  let lo = min, hi = max, terbaik = min;
+
+  while(lo <= hi){
+    const tengah = Math.floor((lo+hi)/2);
+    p.style.setProperty('--sc', tengah/100);
+    if(p.scrollHeight <= a4){ terbaik = tengah; lo = tengah+1 }
+    else hi = tengah-1;
+  }
+
+  p.style.setProperty('--sc', terbaik/100);
+  $('fScale').value = terbaik;
+  $('scaleVal').textContent = terbaik + '%';
+  local.set('ezopr.skala', terbaik);
+  ukurMuat();
+  return terbaik;
+}
+$('btnAutoMuat').onclick = ()=> autoMuat();
+
+function ukurMuat(){
+  const a4 = tinggiA4();
   const p = $('page');
   const guna = p.scrollHeight;
   const pct = Math.round(guna/a4*100);
@@ -1643,7 +1828,7 @@ function ukurMuat(){
 }
 
 /* ===================== CETAK & PDF ===================== */
-$('btnCetak').onclick = ()=>{ render(); setTimeout(()=>window.print(), 150) };
+$('btnCetak').onclick = ()=>{ render(); autoMuat(); setTimeout(()=>window.print(), 150) };
 
 function muatSkrip(src){
   return new Promise((res,rej)=>{
@@ -1654,39 +1839,132 @@ function muatSkrip(src){
   });
 }
 
+async function binaPdf(){
+  render();
+  autoMuat();
+  await muatSkrip('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+  await muatSkrip('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+
+  const asal = $('stageInner').style.transform;
+  $('stageInner').style.transform = 'none';
+  const canvas = await html2canvas($('page'), {scale:2, backgroundColor:'#ffffff', useCORS:true, logging:false});
+  $('stageInner').style.transform = asal;
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF('p','mm','a4');
+  pdf.addImage(canvas.toDataURL('image/jpeg', .92), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+
+  const nama = ('OPR ' + ((semasa&&semasa.tajuk)||'Laporan') + ' ' + ((semasa&&semasa.tarikh)||''))
+    .replace(/[^\w\s\-]/g,'').trim().slice(0,70) + '.pdf';
+  return { blob: pdf.output('blob'), nama };
+}
+
 $('btnPdf').onclick = async ()=>{
-  const b = $('btnPdf'); b.disabled = true; b.textContent = 'Menyediakan PDF…';
+  const b = $('btnPdf'); b.disabled = true; b.textContent = 'Preparing PDF…';
   try{
-    render();
-    await muatSkrip('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
-    await muatSkrip('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
-
-    const el = $('page');
-    const asal = $('stageInner').style.transform;
-    $('stageInner').style.transform = 'none';
-
-    const canvas = await html2canvas(el, {scale:2, backgroundColor:'#ffffff', useCORS:true, logging:false});
-    $('stageInner').style.transform = asal;
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p','mm','a4');
-    pdf.addImage(canvas.toDataURL('image/jpeg', .92), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
-
-    const nama = ('OPR ' + ((semasa&&semasa.tajuk)||'Laporan') + ' ' + ((semasa&&semasa.tarikh)||''))
-      .replace(/[^\w\s\-]/g,'').trim().slice(0,70) + '.pdf';
-
-    const blob = pdf.output('blob');
-    const url  = URL.createObjectURL(blob);
+    const {blob, nama} = await binaPdf();
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = nama; a.rel = 'noopener';
     document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(()=>{
-      URL.revokeObjectURL(url);
-    }, 4000);
+    setTimeout(()=> URL.revokeObjectURL(url), 4000);
     toast('PDF dimuat turun.','ok');
+  }catch(e){ toast(e.message,'err',5500) }
+  finally{ b.disabled=false; b.textContent='Download PDF' }
+};
+
+/* ===================== GOOGLE DRIVE ===================== */
+/* Skop drive.file diminta hanya apabila guru menekan butang Drive, bukan
+   semasa log masuk — app hanya nampak fail yang diciptanya sendiri. */
+let tokenDrive = null;
+
+async function ambilTokenDrive(paksa){
+  if(tokenDrive && !paksa) return tokenDrive;
+  const p = new firebase.auth.GoogleAuthProvider();
+  p.addScope('https://www.googleapis.com/auth/drive.file');
+  p.setCustomParameters({ prompt:'consent' });
+  try{
+    const res = await auth.currentUser.reauthenticateWithPopup(p);
+    tokenDrive = res.credential.accessToken;
+    return tokenDrive;
   }catch(e){
-    toast(e.message,'err',5500);
-  }finally{ b.disabled=false; b.textContent='Muat turun PDF' }
+    if(['auth/popup-blocked','auth/popup-closed-by-user','auth/cancelled-popup-request'].includes(e.code))
+      throw new Error('Tetingkap kebenaran Google ditutup atau disekat. Cuba sekali lagi dan benarkan tetingkap timbul.');
+    throw new Error(ralatAuth(e));
+  }
+}
+
+async function folderDrive(token){
+  const kunci = 'ezopr.folder.' + profil.sekolahId;
+  const simpan = local.get(kunci);
+  if(simpan) return simpan;
+
+  const namaFolder = 'ez-OPR — ' + (sekolah.nama || profil.sekolahId.toUpperCase());
+  const q = "mimeType='application/vnd.google-apps.folder' and trashed=false and name='"
+          + namaFolder.replace(/'/g, "\\'") + "'";
+  const cari = await fetch('https://www.googleapis.com/drive/v3/files?fields=files(id)&q=' + encodeURIComponent(q),
+    { headers:{ Authorization:'Bearer ' + token } });
+  const hasil = await cari.json();
+  if(!cari.ok) throw new Error(hasil?.error?.message || 'Gagal mencari folder Drive.');
+  if(hasil.files && hasil.files.length){ local.set(kunci, hasil.files[0].id); return hasil.files[0].id }
+
+  const cipta = await fetch('https://www.googleapis.com/drive/v3/files?fields=id',{
+    method:'POST',
+    headers:{ Authorization:'Bearer '+token, 'Content-Type':'application/json' },
+    body: JSON.stringify({ name:namaFolder, mimeType:'application/vnd.google-apps.folder' })
+  });
+  const f = await cipta.json();
+  if(!cipta.ok) throw new Error(f?.error?.message || 'Gagal mencipta folder Drive.');
+  local.set(kunci, f.id);
+  return f.id;
+}
+
+async function hantarDrive(token, blob, nama, folder){
+  const bnd = 'ezopr' + Date.now();
+  const meta = { name:nama, mimeType:'application/pdf', parents:[folder] };
+  const badan = new Blob([
+    `--${bnd}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n`,
+    JSON.stringify(meta),
+    `\r\n--${bnd}\r\nContent-Type: application/pdf\r\n\r\n`,
+    blob,
+    `\r\n--${bnd}--`
+  ]);
+  const r = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink',{
+    method:'POST',
+    headers:{ Authorization:'Bearer '+token, 'Content-Type':'multipart/related; boundary='+bnd },
+    body: badan
+  });
+  const j = await r.json();
+  if(!r.ok){ const e = new Error(j?.error?.message || 'Muat naik gagal.'); e.status = r.status; throw e }
+  return j;
+}
+
+$('btnDrive').onclick = async ()=>{
+  const b = $('btnDrive'); b.disabled = true; b.textContent = 'Uploading…';
+  $('driveLink').innerHTML = '';
+  try{
+    const {blob, nama} = await binaPdf();
+    let token = await ambilTokenDrive(false);
+    let fail;
+    try{
+      fail = await hantarDrive(token, blob, nama, await folderDrive(token));
+    }catch(e){
+      if(e.status !== 401 && e.status !== 403) throw e;
+      token = await ambilTokenDrive(true);            // token luput — minta semula
+      fail = await hantarDrive(token, blob, nama, await folderDrive(token));
+    }
+
+    if(fail.webViewLink){
+      $('driveLink').innerHTML = 'Tersimpan dalam Drive — '
+        + `<a href="${fail.webViewLink}" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700">buka fail</a>`;
+    }
+    if(semasa && semasa.id){
+      db.collection('sekolah').doc(profil.sekolahId).collection('laporan').doc(semasa.id)
+        .update({ driveId: fail.id, driveLink: fail.webViewLink || '' }).catch(()=>{});
+    }
+    toast('PDF dimuat naik ke Google Drive.','ok',4200);
+  }catch(e){ toast(e.message,'err',7000) }
+  finally{ b.disabled=false; b.textContent='Save to Google Drive' }
 };
 
 /* ===================== MULA ===================== */
@@ -1697,7 +1975,6 @@ if('serviceWorker' in navigator){
   window.addEventListener('load', ()=> navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
 
-$('kodTag').textContent = KOD.toUpperCase();
 mula();
 </script>
 </body>

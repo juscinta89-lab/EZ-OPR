@@ -2,35 +2,36 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function masuk() {
-      return request.auth != null;
-    }
-    function saya() {
-      return get(/databases/$(database)/documents/pengguna/$(request.auth.uid)).data;
-    }
-    function ahli(sid) {
-      return masuk() && saya().sekolahId == sid;
-    }
-    function admin(sid) {
-      return ahli(sid) && saya().peranan == 'admin';
-    }
+    function masuk()      { return request.auth != null; }
+    function sekolahDoc(sid) { return get(/databases/$(database)/documents/sekolah/$(sid)).data; }
+    function saya()       { return get(/databases/$(database)/documents/pengguna/$(request.auth.uid)).data; }
+    function ahli(sid)    { return masuk() && saya().sekolahId == sid; }
+    function admin(sid)   { return ahli(sid) && saya().peranan == 'admin'; }
 
-    // Profil pengguna — setiap orang urus profil sendiri sahaja
+    // ---------- Profil guru ----------
+    // Guru hanya boleh menyertai sekolah yang wujud DAN masih membuka pendaftaran,
+    // atau sekolah yang baru dicipta sendiri.
     match /pengguna/{uid} {
-      allow read, create, update: if masuk() && request.auth.uid == uid;
-      allow delete: if false;
+      allow read, update, delete: if masuk() && request.auth.uid == uid;
+      allow create: if masuk() && request.auth.uid == uid
+        && exists(/databases/$(database)/documents/sekolah/$(request.resource.data.sekolahId))
+        && (
+             sekolahDoc(request.resource.data.sekolahId).terbuka == true
+          || sekolahDoc(request.resource.data.sekolahId).pemilik == request.auth.uid
+        );
     }
 
-    // Dokumen sekolah — sesiapa yang log masuk boleh baca (untuk semak kod semasa daftar),
-    // hanya pentadbir sekolah itu boleh ubah.
+    // ---------- Sekolah ----------
     match /sekolah/{sid} {
+      // Baca dibenarkan supaya kod sekolah boleh disemak semasa menyertai.
       allow read:   if masuk();
-      allow create: if masuk();
-      allow update: if admin(sid);
+      // Cipta hanya untuk diri sendiri sebagai pemilik. Kod yang sudah wujud
+      // tidak boleh ditulis ganti kerana 'create' hanya sah bagi dokumen baharu.
+      allow create: if masuk() && request.resource.data.pemilik == request.auth.uid;
+      allow update: if admin(sid) && request.resource.data.pemilik == resource.data.pemilik;
       allow delete: if false;
 
-      // Laporan — hanya ahli sekolah. Guru boleh ubah laporan sendiri,
-      // pentadbir boleh ubah semua.
+      // ---------- Laporan ----------
       match /laporan/{id} {
         allow read:   if ahli(sid);
         allow create: if ahli(sid) && request.resource.data.olehUid == request.auth.uid;
