@@ -882,7 +882,13 @@ function mula(){
 }
 
 async function kendaliAuth(u){
-  if(!u){ uid=null; profil=null; sekolah=null; tunjuk('auth'); return }
+  if(!u){
+    // Setiap rujukan kepada sekolah terdahulu mesti dilupakan, jika tidak
+    // ID laporan lama akan terbawa ke sekolah akaun yang berikutnya.
+    uid=null; profil=null; sekolah=null; penggunaGoogle=null;
+    semasa=null; laporan=[]; photos=[null,null,null,null]; tokenDrive=null;
+    tunjuk('auth'); return;
+  }
 
   // Sekat domain jika disenaraikan dalam config.js
   const izin = window.EZOPR_DOMAIN_DIBENARKAN || [];
@@ -934,6 +940,7 @@ async function masukApp(user){
   }
 
   profil = snap.data();
+  semasa = null; laporan = []; photos = [null,null,null,null];
   await muatSekolah();
 
   // Setiap guru ada senarai pengesah sendiri. Kali pertama, salin templat sekolah
@@ -1074,8 +1081,12 @@ function tab(name, dariNav){
   document.querySelectorAll('.tab').forEach(v=> v.classList.remove('on'));
   $('tab-'+name).classList.add('on');
   window.scrollTo({top:0, behavior:'smooth'});
-  if(name==='edit' && dariNav && semasa && semasa.id) { /* kekal */ }
-  if(name==='edit' && dariNav && !semasa) baru();
+  if(name==='edit' && dariNav){
+    // "New" bermaksud laporan baharu. Tanpa penetapan semula, ID laporan
+    // terdahulu kekal dan Simpan cuba mengemas kini dokumen yang salah.
+    const belumSimpan = semasa && !semasa.id && $('fTajuk').value.trim();
+    if(!belumSimpan || confirm('Buang laporan yang belum disimpan dan mula yang baharu?')) baru();
+  }
   if(name==='view'){ isiBorangKeSemasa(); render(); skalaManual ? pastikanMuat() : autoMuat(); skalaPentas() }
   if(name==='setup') isiTetapan();
   if(name==='list') lukisSenarai();
@@ -1225,9 +1236,20 @@ $('btnSimpan').onclick = async ()=>{
     data.olehNama = semasa.olehNama || profil.nama;
 
     let id = semasa.id;
-    if(id){ await col.doc(id).update(data) }
-    else  { data.dicipta = firebase.firestore.FieldValue.serverTimestamp();
-            const ref = await col.add(data); id = ref.id; semasa.id = id }
+    if(id){
+      try{
+        await col.doc(id).update(data);
+      }catch(e){
+        // Dokumen telah dipadam, atau ID milik sekolah lain — simpan sebagai baharu
+        if(e.code !== 'not-found' && !/No document to update/i.test(e.message||'')) throw e;
+        data.dicipta = firebase.firestore.FieldValue.serverTimestamp();
+        const ref = await col.add(data); id = ref.id; semasa.id = id;
+        toast('Laporan asal tidak dijumpai — disimpan sebagai laporan baharu.','wait',5000);
+      }
+    }else{
+      data.dicipta = firebase.firestore.FieldValue.serverTimestamp();
+      const ref = await col.add(data); id = ref.id; semasa.id = id;
+    }
 
     await fotoSimpan(id, photos);
     await muatLaporan();

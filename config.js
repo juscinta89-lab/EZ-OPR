@@ -5,13 +5,12 @@
 /* 1. Konfigurasi Firebase
    Firebase Console → Project settings → Your apps → Web app → Config      */
 window.EZOPR_FIREBASE = {
-  apiKey: "AIzaSyCjBpS0cWNRbgX8gFjABzIO8FwMtR1tJNw",
-  authDomain: "ez-opr.firebaseapp.com",
-  projectId: "ez-opr",
-  storageBucket: "ez-opr.firebasestorage.app",
-  messagingSenderId: "245859591171",
-  appId: "1:245859591171:web:fb9f708b399d94f0cb9a36",
-  measurementId: "G-BS08FY456N"
+  apiKey:            "MASUKKAN_API_KEY_ANDA",
+  authDomain:        "projek-anda.firebaseapp.com",
+  projectId:         "projek-anda",
+  storageBucket:     "projek-anda.appspot.com",
+  messagingSenderId: "000000000000",
+  appId:             "1:000000000000:web:xxxxxxxxxxxxxxxx"
 };
 
 /* 2. Kod sekolah lalai — BIARKAN KOSONG untuk pemasangan berbilang sekolah.
@@ -31,4 +30,4 @@ window.EZOPR_DOMAIN_DIBENARKAN = [];
 window.EZOPR_GOOGLE_API_KEY = "";
 
 /* 5. Versi — naikkan setiap kali fail app dikemas kini                     */
-window.EZOPR_VERSI = "2.2.1";
+window.EZOPR_VERSI = "2.2.2";
