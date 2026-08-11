@@ -279,7 +279,7 @@ textarea{resize:vertical;line-height:1.55}
 .fit.over .fit-label{color:var(--danger)}
 
 .stage{background:#B9C4D0;border-radius:var(--r);padding:12px;overflow:auto;border:1px solid var(--line)}
-.stage-inner{transform-origin:top center;margin:0 auto}
+.stage-inner{margin:0 auto;overflow:hidden}
 
 /* =====================================================================
    HALAMAN A4 — susun atur guna flexbox supaya selamat untuk eksport PDF
@@ -352,8 +352,8 @@ textarea{resize:vertical;line-height:1.55}
   .body{padding:0;max-width:none}
   #tab-view{display:block !important}
   .stage{background:#fff;padding:0;border:0;overflow:visible}
-  .stage-inner{transform:none !important;width:auto !important;height:auto !important}
-  .page{box-shadow:none;margin:0}
+  .stage-inner{width:auto !important;height:auto !important;overflow:visible !important}
+  .page{box-shadow:none;margin:0;transform:none !important}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 
@@ -630,6 +630,31 @@ textarea{resize:vertical;line-height:1.55}
         <div class="btn-row" style="margin-bottom:0">
           <button class="btn btn-ghost btn-sm" id="btnSenaraiModel" style="width:100%">Load models</button>
           <button class="btn btn-ghost btn-sm" id="btnUjiAI" style="width:100%">Test AI</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Simpanan Google Drive</h2>
+        <p class="hint" style="margin:-6px 0 12px">
+          Pilih folder tempat PDF disimpan. Boleh folder kongsi sekolah — anda perlu
+          memilihnya sekali sahaja untuk memberi kebenaran kepada app.
+        </p>
+        <div class="field">
+          <label>Folder semasa</label>
+          <input id="sFolder" readonly value="Folder app sendiri">
+        </div>
+        <div class="btn-row" style="margin-bottom:12px">
+          <button class="btn btn-ghost btn-sm" id="btnPilihFolder" style="width:100%">Choose folder</button>
+          <button class="btn btn-ghost btn-sm" id="btnFolderAsal" style="width:100%">Use app folder</button>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label for="sFolderPaut">Atau tampal pautan folder yang dikongsi</label>
+          <input id="sFolderPaut" placeholder="https://drive.google.com/drive/folders/...">
+          <p class="hint">
+            Pautan sahaja tidak memberi kebenaran. Selepas menampal, tekan
+            <b>Choose folder</b> dan pilih folder yang sama di bawah
+            <b>Dikongsi dengan saya</b> — Google memerlukan pemilihan itu.
+          </p>
         </div>
       </div>
 
@@ -1452,6 +1477,8 @@ function isiTetapan(){
   $('sPeranan').value= profil.peranan==='admin' ? 'Pentadbir sekolah' : 'Guru';
   lukisLogo(); lukisPengesah(); kiraFoto();
 
+  lukisFolder();
+
   const asas = location.href.split('?')[0].split('#')[0];
   $('sPautan').value = asas + '?s=' + profil.sekolahId;
   $('sTerbuka').checked = sekolah.terbuka !== false;
@@ -1521,6 +1548,12 @@ function kendaliPengesah(e){
 }
 $('signers').addEventListener('input', kendaliPengesah);
 $('signersTpl').addEventListener('input', kendaliPengesah);
+
+$('sFolderPaut').addEventListener('change', ()=>{
+  const id = idDariPautan($('sFolderPaut').value);
+  if(!id) return toast('Pautan folder tidak dikenali.','err');
+  toast('Pautan dikenali. Sekarang tekan Choose folder dan pilih folder itu untuk memberi kebenaran.','wait',6000);
+});
 
 $('btnSalinPautan').onclick = async ()=>{
   const teks = $('sPautan').value;
@@ -1774,6 +1807,7 @@ $('fScale').addEventListener('input', e=>{
   $('page').style.setProperty('--sc', v/100);
   local.set('ezopr.skala', v);
   ukurMuat();
+  skalaPentas();
 });
 
 /* Hanya campur tangan apabila kandungan betul-betul melimpah keluar halaman */
@@ -1788,13 +1822,23 @@ function pastikanMuat(){
 function skalaPentas(){
   const stage = document.querySelector('.stage');
   if(!stage) return;
+  const p = $('page'), inner = $('stageInner');
+
+  // Ukur saiz sebenar halaman tanpa transform yang sedia ada
+  p.style.transform = 'none';
+  const w = p.offsetWidth  || 794;
+  const h = p.offsetHeight || 1123;
+
   const avail = stage.clientWidth - 24;
-  const w = $('page').offsetWidth || 794;
-  const k = Math.min(1, avail/w);
-  const inner = $('stageInner');
-  inner.style.transform = `scale(${k})`;
-  inner.style.width  = w + 'px';
-  inner.style.height = ($('page').offsetHeight * k) + 'px';
+  const k = Math.min(1, avail / w);
+
+  // Transform dikenakan pada halaman itu sendiri dari penjuru kiri atas, dan
+  // bekasnya dikecilkan kepada saiz terskala — jadi tiada limpahan, dan
+  // margin auto dapat memusatkannya seperti biasa.
+  p.style.transformOrigin = 'top left';
+  p.style.transform = `scale(${k})`;
+  inner.style.width  = Math.round(w * k) + 'px';
+  inner.style.height = Math.round(h * k) + 'px';
 }
 window.addEventListener('resize', skalaPentas);
 
@@ -1826,6 +1870,7 @@ function autoMuat(){
   $('scaleVal').textContent = terbaik + '%';
   local.set('ezopr.skala', terbaik);
   ukurMuat();
+  skalaPentas();
   return terbaik;
 }
 $('btnAutoMuat').onclick = ()=>{ skalaManual = false; autoMuat() };
@@ -1859,10 +1904,11 @@ async function binaPdf(){
   await muatSkrip('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
   await muatSkrip('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
 
-  const asal = $('stageInner').style.transform;
-  $('stageInner').style.transform = 'none';
-  const canvas = await html2canvas($('page'), {scale:2, backgroundColor:'#ffffff', useCORS:true, logging:false});
-  $('stageInner').style.transform = asal;
+  const p = $('page');
+  const asal = p.style.transform;
+  p.style.transform = 'none';
+  const canvas = await html2canvas(p, {scale:2, backgroundColor:'#ffffff', useCORS:true, logging:false});
+  p.style.transform = asal;
 
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF('p','mm','a4');
@@ -1908,7 +1954,93 @@ async function ambilTokenDrive(paksa){
   }
 }
 
+/* Folder yang dipilih guru melalui Google Picker. Disimpan setiap peranti
+   dan disalin ke profil supaya ikut guru ke peranti lain. */
+function kunciFolder(){ return 'ezopr.folderPilih.' + profil.sekolahId }
+
+function folderPilihan(){
+  try{
+    const j = JSON.parse(local.get(kunciFolder()) || 'null');
+    if(j && j.id) return j;
+  }catch(e){}
+  if(profil && profil.driveFolder && profil.driveFolder.id) return profil.driveFolder;
+  return null;
+}
+
+function simpanFolder(f){
+  if(f) local.set(kunciFolder(), JSON.stringify(f));
+  else  { try{ localStorage.removeItem(kunciFolder()) }catch(e){} }
+  if(profil){
+    profil.driveFolder = f || null;
+    db.collection('pengguna').doc(uid).update({driveFolder: f || null}).catch(()=>{});
+  }
+  lukisFolder();
+}
+
+function lukisFolder(){
+  const f = folderPilihan();
+  $('sFolder').value = f ? f.nama : 'Folder app sendiri (ez-OPR — nama sekolah)';
+}
+
+function idDariPautan(url){
+  const m = (url||'').match(/[-\w]{25,}/);
+  return m ? m[0] : '';
+}
+
+async function muatPicker(){
+  await muatSkrip('https://apis.google.com/js/api.js');
+  if(window.google && google.picker) return;
+  await new Promise((res,rej)=> gapi.load('picker', {
+    callback: res,
+    onerror: ()=> rej(new Error('Gagal memuatkan Google Picker.'))
+  }));
+}
+
+$('btnFolderAsal').onclick = ()=>{
+  simpanFolder(null);
+  toast('PDF akan disimpan dalam folder app sendiri.','ok');
+};
+
+$('btnPilihFolder').onclick = async ()=>{
+  const b = $('btnPilihFolder'); b.disabled = true;
+  try{
+    const token = await ambilTokenDrive(false);
+    await muatPicker();
+    const kunciApi = window.EZOPR_GOOGLE_API_KEY || (window.EZOPR_FIREBASE||{}).apiKey;
+    if(!kunciApi) throw new Error('Kunci API Google tiada dalam config.js.');
+
+    const jenis = 'application/vnd.google-apps.folder';
+    const milik = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
+      .setIncludeFolders(true).setSelectFolderEnabled(true).setMimeTypes(jenis);
+    const kongsi = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
+      .setIncludeFolders(true).setSelectFolderEnabled(true).setMimeTypes(jenis)
+      .setOwnedByMe(false).setLabel('Dikongsi dengan saya');
+
+    const pilih = await new Promise(res=>{
+      new google.picker.PickerBuilder()
+        .setOAuthToken(token)
+        .setDeveloperKey(kunciApi)
+        .setOrigin(location.protocol + '//' + location.host)
+        .addView(milik).addView(kongsi)
+        .enableFeature(google.picker.Feature.SUPPORT_DRIVES)
+        .setCallback(d=>{
+          if(d.action === google.picker.Action.PICKED) res(d.docs[0]);
+          else if(d.action === google.picker.Action.CANCEL) res(null);
+        })
+        .build().setVisible(true);
+    });
+
+    if(!pilih) return;
+    simpanFolder({ id: pilih.id, nama: pilih.name || 'Folder Drive' });
+    toast('Folder dipilih: ' + (pilih.name||'') + '. PDF akan disimpan di situ.','ok',4600);
+  }catch(e){ toast(e.message,'err',7000) }
+  finally{ b.disabled = false }
+};
+
 async function folderDrive(token){
+  const pilih = folderPilihan();
+  if(pilih) return pilih.id;
+
   const kunci = 'ezopr.folder.' + profil.sekolahId;
   const simpan = local.get(kunci);
   if(simpan) return simpan;
@@ -1991,6 +2123,13 @@ $('btnDrive').onclick = async ()=>{
         + 'Pastikan nombor projek di penjuru atas halaman itu ialah <b>' + (no || '—') + '</b>. '
         + 'Selepas menekan Enable, tunggu 2–5 minit sebelum cuba semula.';
       toast('Drive API belum aktif untuk projek ' + (no || 'ini') + '. Lihat pautan di bawah butang.','err',7000);
+    }else if(/File not found|notFound|insufficientFilePermissions/i.test(e.message) && folderPilihan()){
+      $('driveLink').innerHTML =
+        'App tidak dapat menulis ke folder yang dipilih. Ia mungkin telah dipadam, atau '
+        + 'kebenaran anda ke folder itu telah ditarik. Buka <b>Settings</b> → '
+        + '<b>Simpanan Google Drive</b> → <b>Choose folder</b> untuk memilihnya semula, '
+        + 'atau <b>Use app folder</b> untuk kembali ke folder app sendiri.';
+      toast('Folder Drive yang dipilih tidak boleh diakses.','err',7000);
     }else if(/admin_policy_enforced|blocked|access_denied|disallowed_useragent/i.test(e.message)){
       $('driveLink').innerHTML =
         'Pentadbir Google Workspace domain anda menyekat app pihak ketiga daripada '

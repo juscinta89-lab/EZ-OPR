@@ -22,8 +22,13 @@ dimuat naik ke Cloud Storage, hanya disimpan dalam IndexedDB peranti.
 7. `window.EZOPR_KOD_SEKOLAH` dibiarkan kosong — setiap guru memilih
    sekolahnya sendiri semasa log masuk pertama. Isi hanya jika salinan ini
    khusus untuk satu sekolah.
-8. Untuk simpanan ke Google Drive: Google Cloud Console → **APIs & Services →
-   Library → Google Drive API → Enable** (projek yang sama dengan Firebase).
+8. Untuk simpanan ke Google Drive, aktifkan **dua** API dalam Google Cloud
+   Console (projek yang sama dengan Firebase), di bawah **APIs & Services → Library**:
+   - **Google Drive API** — untuk memuat naik fail
+   - **Google Picker API** — untuk memilih folder Drive kongsi
+9. **APIs & Services → OAuth consent screen** → **Publish app** supaya guru
+   sekolah lain boleh log masuk. Skop `drive.file` tidak sensitif, jadi tiada
+   proses pengesahan Google diperlukan.
 
 ## 2. Sediakan kunci AI percuma
 
@@ -66,9 +71,23 @@ Tanpa pautan, mereka boleh taip kod sekolah pada skrin *Sekolah anda*.
 Semua guru mewarisi logo, warna dan templat pengesah — laporan keluar seragam.
 
 **Simpan ke Google Drive:** tab **Preview** → **Save to Google Drive**. Kali
-pertama, Google akan meminta kebenaran. PDF disimpan dalam folder
-*ez-OPR — <nama sekolah>* dalam Drive guru itu sendiri. App hanya boleh
-melihat fail yang diciptanya, bukan fail lain dalam Drive anda.
+pertama, Google akan meminta kebenaran. Fail masuk ke Drive akaun yang log
+masuk ez-OPR — jadi log masuk dengan akaun MOE untuk menyimpan ke Drive MOE.
+
+Secara lalai PDF disimpan dalam folder *ez-OPR — <nama sekolah>* yang dicipta
+sendiri oleh app. Untuk menghantar ke **folder kongsi sekolah**:
+
+1. Tab **Settings** → **Simpanan Google Drive** → **Choose folder**
+2. Pilih folder di bawah tab **Dikongsi dengan saya**
+3. Semua PDF selepas itu masuk ke folder tersebut
+
+Setiap guru perlu melakukan ini sekali pada perantinya. Sebabnya teknikal:
+app menggunakan skop `drive.file`, yang hanya membenarkan akses kepada fail
+yang diciptanya sendiri atau yang **dipilih secara eksplisit** oleh pengguna.
+Menampal pautan folder sahaja tidak memberi kebenaran — Google memerlukan
+pemilihan melalui Picker. Ini juga bermakna app tidak pernah dapat melihat
+fail lain dalam Drive anda, jadi tiada semakan keselamatan Google diperlukan
+untuk menerbitkannya.
 
 **Buat laporan:** Baru → isi maklumat → tambah 4 gambar → **Jana dengan AI** →
 semak dan sunting ayat → **Simpan** → **Lihat pratonton** → **Muat turun PDF**.
