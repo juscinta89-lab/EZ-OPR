@@ -2,41 +2,69 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function masuk()      { return request.auth != null; }
-    function sekolahDoc(sid) { return get(/databases/$(database)/documents/sekolah/$(sid)).data; }
-    function saya()       { return get(/databases/$(database)/documents/pengguna/$(request.auth.uid)).data; }
-    function ahli(sid)    { return masuk() && saya().sekolahId == sid; }
-    function admin(sid)   { return ahli(sid) && saya().peranan == 'admin'; }
+    function masuk()          { return request.auth != null; }
+    function sekolahDoc(sid)  { return get(/databases/$(database)/documents/sekolah/$(sid)).data; }
+    function saya()           { return get(/databases/$(database)/documents/pengguna/$(request.auth.uid)).data; }
+    function ahli(sid)        { return masuk() && saya().sekolahId == sid; }
+    function admin(sid)       { return ahli(sid) && saya().peranan == 'admin'; }
+
+    // ---------- Pemilik platform ----------
+    function pemilikAda() {
+      return exists(/databases/$(database)/documents/platform/pemilik);
+    }
+    function pemilikPlatform() {
+      return masuk() && pemilikAda()
+        && get(/databases/$(database)/documents/platform/pemilik).data.uid == request.auth.uid;
+    }
+
+    match /platform/{doc} {
+      allow read:   if masuk();
+      // 'create' hanya sah untuk dokumen yang belum wujud — tuntutan pertama menang.
+      allow create: if masuk() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if masuk() && resource.data.uid == request.auth.uid;
+    }
 
     // ---------- Profil guru ----------
-    // Guru hanya boleh menyertai sekolah yang wujud DAN masih membuka pendaftaran,
-    // atau sekolah yang baru dicipta sendiri.
     match /pengguna/{uid} {
-      allow read, update, delete: if masuk() && request.auth.uid == uid;
+      allow read, update: if masuk() && (request.auth.uid == uid || pemilikPlatform());
+      allow delete: if masuk() && request.auth.uid == uid;
+
+      // Sertai sekolah: sekolah mesti wujud, dan salah satu daripada —
+      // pendaftaran terbuka, pencipta sekolah itu sendiri, atau e-mel guru
+      // sepadan dengan pentadbir yang dilantik pemilik platform.
+      // Peranan 'admin' hanya sah melalui dua laluan terakhir; selain itu 'guru'.
       allow create: if masuk() && request.auth.uid == uid
         && exists(/databases/$(database)/documents/sekolah/$(request.resource.data.sekolahId))
         && (
              sekolahDoc(request.resource.data.sekolahId).terbuka == true
           || sekolahDoc(request.resource.data.sekolahId).pemilik == request.auth.uid
+          || sekolahDoc(request.resource.data.sekolahId).adminEmel == request.auth.token.email
+        )
+        && (
+             request.resource.data.peranan == 'guru'
+          || ( request.resource.data.peranan == 'admin'
+               && ( sekolahDoc(request.resource.data.sekolahId).pemilik == request.auth.uid
+                 || sekolahDoc(request.resource.data.sekolahId).adminEmel == request.auth.token.email ) )
         );
     }
 
     // ---------- Sekolah ----------
     match /sekolah/{sid} {
-      // Baca dibenarkan supaya kod sekolah boleh disemak semasa menyertai.
-      allow read:   if masuk();
-      // Cipta hanya untuk diri sendiri sebagai pemilik. Kod yang sudah wujud
-      // tidak boleh ditulis ganti kerana 'create' hanya sah bagi dokumen baharu.
-      allow create: if masuk() && request.resource.data.pemilik == request.auth.uid;
-      allow update: if admin(sid) && request.resource.data.pemilik == resource.data.pemilik;
+      allow read: if masuk();
+      // Sebelum platform dituntut: sesiapa boleh mendaftar sekolah (tingkah laku asal,
+      // memelihara data sedia ada). Selepas dituntut: hanya pemilik platform.
+      allow create: if masuk() && request.resource.data.pemilik == request.auth.uid
+        && ( pemilikPlatform() || !pemilikAda() );
+      allow update: if pemilikPlatform()
+        || ( admin(sid) && request.resource.data.pemilik == resource.data.pemilik );
       allow delete: if false;
 
       // ---------- Laporan ----------
       match /laporan/{id} {
-        allow read:   if ahli(sid);
+        allow read:   if ahli(sid) || pemilikPlatform();
         allow create: if ahli(sid) && request.resource.data.olehUid == request.auth.uid;
-        allow update, delete: if ahli(sid) &&
-          (resource.data.olehUid == request.auth.uid || admin(sid));
+        allow update, delete: if pemilikPlatform() ||
+          ( ahli(sid) && (resource.data.olehUid == request.auth.uid || admin(sid)) );
       }
     }
   }

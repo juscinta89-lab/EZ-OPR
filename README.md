@@ -151,6 +151,26 @@ dan `CACHE` dalam `sw.js` supaya pengguna menerima versi baharu.
 
 ---
 
+## Pemilik platform (untuk penjualan)
+
+Satu akaun boleh memiliki keseluruhan pemasangan dan mengurus semua sekolah
+tanpa akaun tambahan:
+
+1. Isi `window.EZOPR_PEMILIK_EMEL = "emel-anda@gmail.com";` dalam `config.js`.
+2. Tampal semula `firestore.rules` yang baharu → **Publish**.
+3. Log masuk ez-OPR dengan akaun itu sekali — status pemilik dituntut secara
+   automatik dan kad **Platform — pemilik** muncul dalam tab Settings.
+
+Dari kad itu pemilik boleh, untuk setiap sekolah: mendaftarkan sekolah baharu
+apabila ada pembelian, menetapkan **e-mel pentadbir** (guru dengan e-mel itu
+terus menjadi pentadbir apabila log masuk kali pertama), membuka atau menutup
+pendaftaran, menyalin pautan jemputan, dan melihat senarai guru serta menukar
+peranan mereka.
+
+Selepas status pemilik dituntut, pendaftaran sekolah oleh orang awam ditutup —
+hanya pemilik boleh menambah sekolah. Sekolah dan data yang sedia ada tidak
+terjejas; tiada migrasi diperlukan.
+
 ## Berbilang sekolah
 
 Satu pemasangan boleh menampung seberapa banyak sekolah. Setiap sekolah ialah

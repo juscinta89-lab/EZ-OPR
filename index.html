@@ -633,6 +633,25 @@ textarea{resize:vertical;line-height:1.55}
         </div>
       </div>
 
+      <div class="card hide" id="cardPlatform">
+        <h2>Platform — pemilik</h2>
+        <p class="hint" style="margin:-6px 0 14px">
+          Anda pemilik ez-OPR. Daftarkan sekolah baharu di sini apabila ada pembelian,
+          dan tetapkan e-mel pentadbir supaya guru itu terus menjadi pentadbir apabila
+          log masuk kali pertama — tanpa akaun tambahan.
+        </p>
+        <div class="field"><label for="plNama">Nama sekolah</label>
+          <input id="plNama" placeholder="SK CONTOH"></div>
+        <div class="row">
+          <div class="field"><label for="plKod">Kod sekolah</label>
+            <input id="plKod" placeholder="DBA0000" autocapitalize="characters"></div>
+          <div class="field"><label for="plEmel">E-mel pentadbir</label>
+            <input id="plEmel" placeholder="guru@moe-dl.edu.my" autocapitalize="none"></div>
+        </div>
+        <button class="btn btn-teal" id="plTambah">Add school</button>
+        <div id="plSenarai" style="margin-top:16px"></div>
+      </div>
+
       <div class="card">
         <h2>Simpanan Google Drive</h2>
         <p class="hint" style="margin:-6px 0 12px">
@@ -903,6 +922,7 @@ async function kendaliAuth(u){
 
   uid = u.uid;
   try{
+    await muatPlatform(u);
     await masukApp(u);
   }catch(e){
     if(e.code === 'permission-denied'){
@@ -927,13 +947,23 @@ async function masukApp(user){
   if(!snap.exists){
     penggunaGoogle = user;
 
-    // Pautan jemputan atau kod lalai yang sah — terus sertai tanpa soalan
-    if(KOD_CADANGAN && (await db.collection('sekolah').doc(KOD_CADANGAN).get()).exists){
-      await sertaiSekolah(KOD_CADANGAN);
-      snap = await db.collection('pengguna').doc(uid).get();
-    }else{
+    // Pautan jemputan atau kod lalai yang sah — cuba sertai terus tanpa soalan
+    if(KOD_CADANGAN){
+      try{
+        const sd = await db.collection('sekolah').doc(KOD_CADANGAN).get();
+        if(sd.exists){
+          await sertaiSekolah(KOD_CADANGAN);
+          snap = await db.collection('pengguna').doc(uid).get();
+        }
+      }catch(e){ /* sekolah tutup atau kebenaran ditolak — jatuh ke skrin pilihan */ }
+    }
+
+    if(!snap.exists){
       $('obKod').value = KOD_CADANGAN.toUpperCase();
       $('obKodBaru').value = KOD_CADANGAN.toUpperCase();
+      // Selepas platform dituntut, hanya pemilik boleh mendaftarkan sekolah baharu
+      const sekat = platformAda && !sayaPemilik;
+      document.querySelector('.seg button[data-m="new"]').classList.toggle('hide', sekat);
       tunjuk('onboard');
       return;
     }
@@ -996,6 +1026,141 @@ $('btnKeluar').onclick = ()=>{
   if(confirm('Log keluar daripada ez-OPR?')) auth.signOut();
 };
 
+/* ===================== PEMILIK PLATFORM ===================== */
+/* Satu akaun memiliki keseluruhan pemasangan. Statusnya disimpan dalam
+   platform/pemilik supaya peraturan Firestore boleh menguatkuasakannya —
+   e-mel dalam config.js hanya menentukan siapa yang layak menuntutnya. */
+let platformAda = false, sayaPemilik = false;
+
+async function muatPlatform(u){
+  try{
+    const d = await db.collection('platform').doc('pemilik').get();
+    if(d.exists){
+      platformAda = true;
+      sayaPemilik = d.data().uid === uid;
+      return;
+    }
+    const cfg = (window.EZOPR_PEMILIK_EMEL||'').toLowerCase().trim();
+    if(cfg && (u.email||'').toLowerCase() === cfg){
+      await db.collection('platform').doc('pemilik').set({
+        uid, emel: u.email || '',
+        dicipta: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      platformAda = true; sayaPemilik = true;
+      toast('Akaun ini kini pemilik platform ez-OPR.','ok',5200);
+    }
+  }catch(e){
+    // Peraturan lama belum ditampal — teruskan tanpa ciri pemilik.
+  }
+}
+
+async function muatSenaraiPlatform(){
+  const box = $('plSenarai');
+  box.innerHTML = '<p class="hint">Memuatkan senarai sekolah…</p>';
+  try{
+    const q = await db.collection('sekolah').get();
+    const rows = q.docs.map(d=>({kod:d.id, ...d.data()}))
+      .sort((a,b)=> a.kod.localeCompare(b.kod));
+    box.innerHTML = rows.map(s=>`
+      <div style="border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <b style="font-size:14.5px">${esc(s.kod.toUpperCase())}</b>
+          <span style="font-size:13px;color:var(--ink-2);flex:1;min-width:0">${esc(s.nama||'—')}</span>
+          <span class="chip ${s.terbuka===false?'warn':''}">${s.terbuka===false?'TUTUP':'TERBUKA'}</span>
+        </div>
+        <div class="field" style="margin:10px 0 8px">
+          <label>E-mel pentadbir</label>
+          <input data-pl-emel="${esc(s.kod)}" value="${esc(s.adminEmel||'')}"
+                 placeholder="guru@moe-dl.edu.my" autocapitalize="none">
+        </div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" data-pl-act="emel" data-kod="${esc(s.kod)}">Save email</button>
+          <button class="btn btn-ghost btn-sm" data-pl-act="buka" data-kod="${esc(s.kod)}">${s.terbuka===false?'Buka daftar':'Tutup daftar'}</button>
+          <button class="btn btn-ghost btn-sm" data-pl-act="link" data-kod="${esc(s.kod)}">Copy link</button>
+          <button class="btn btn-ghost btn-sm" data-pl-act="guru" data-kod="${esc(s.kod)}">Teachers</button>
+        </div>
+        <div data-pl-guru="${esc(s.kod)}" style="margin-top:6px"></div>
+      </div>`).join('') || '<p class="hint">Belum ada sekolah didaftarkan.</p>';
+  }catch(e){ box.innerHTML = '<p class="hint">Gagal memuatkan: ' + esc(e.message) + '</p>' }
+}
+
+$('plTambah').onclick = async ()=>{
+  const b = $('plTambah'); b.disabled = true;
+  try{
+    const nama = $('plNama').value.trim();
+    const kod  = bersihKod($('plKod').value);
+    const emel = $('plEmel').value.trim().toLowerCase();
+    if(!nama) throw new Error('Isi nama sekolah.');
+    if(kod.length < 3) throw new Error('Kod sekolah perlu sekurang-kurangnya 3 aksara.');
+    if((await db.collection('sekolah').doc(kod).get()).exists)
+      throw new Error('Kod ' + kod.toUpperCase() + ' sudah digunakan.');
+
+    await db.collection('sekolah').doc(kod).set({
+      nama, alamat:'', warna:'#0F2247', logo:'',
+      unit:['KURIKULUM','KOKURIKULUM','HEM','PSS'],
+      pengesah: DEF_SIGN,
+      aiProvider:'gemini', aiModel:'', aiKey:'',
+      terbuka:true, adminEmel: emel,
+      pemilik: uid,
+      dicipta: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    $('plNama').value = ''; $('plKod').value = ''; $('plEmel').value = '';
+    muatSenaraiPlatform();
+    toast('Sekolah ' + kod.toUpperCase() + ' didaftarkan. Hantar pautan jemputannya kepada pentadbir sekolah itu.','ok',5600);
+  }catch(e){ toast(e.message,'err',6000) }
+  finally{ b.disabled = false }
+};
+
+$('plSenarai').addEventListener('click', async e=>{
+  const b = e.target.closest('[data-pl-act]'); if(!b) return;
+  const kod = b.dataset.kod;
+  const ref = db.collection('sekolah').doc(kod);
+  b.disabled = true;
+  try{
+    if(b.dataset.plAct === 'emel'){
+      const v = document.querySelector(`[data-pl-emel="${kod}"]`).value.trim().toLowerCase();
+      await ref.update({adminEmel: v});
+      toast('Disimpan. Guru dengan e-mel itu menjadi pentadbir ' + kod.toUpperCase() + ' apabila log masuk.','ok',5200);
+    }
+    else if(b.dataset.plAct === 'buka'){
+      const s = await ref.get();
+      await ref.update({terbuka: s.data().terbuka === false});
+      muatSenaraiPlatform();
+    }
+    else if(b.dataset.plAct === 'link'){
+      const url = location.href.split('?')[0].split('#')[0] + '?s=' + kod;
+      try{ await navigator.clipboard.writeText(url); toast('Pautan ' + kod.toUpperCase() + ' disalin.','ok') }
+      catch(_){ toast(url,'wait',8000) }
+    }
+    else if(b.dataset.plAct === 'guru'){
+      const kotak = document.querySelector(`[data-pl-guru="${kod}"]`);
+      if(kotak.innerHTML){ kotak.innerHTML = ''; return }
+      kotak.innerHTML = '<p class="hint">Memuatkan…</p>';
+      const q = await db.collection('pengguna').where('sekolahId','==',kod).get();
+      kotak.innerHTML = q.docs.map(d=>{
+        const g = d.data();
+        return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--line)">
+          <div style="flex:1;min-width:0;font-size:13px;line-height:1.35">
+            <b>${esc(g.nama||'')}</b><br><span style="color:var(--ink-2)">${esc(g.emel||'')}</span>
+          </div>
+          <span class="chip ${g.peranan==='admin'?'':'warn'}">${g.peranan==='admin'?'ADMIN':'GURU'}</span>
+          <button class="btn btn-ghost btn-sm" data-pl-act="peranan" data-kod="${kod}"
+                  data-uid="${d.id}" data-jadi="${g.peranan==='admin'?'guru':'admin'}">
+            ${g.peranan==='admin'?'Jadi guru':'Jadi admin'}</button>
+        </div>`;
+      }).join('') || '<p class="hint">Belum ada guru log masuk.</p>';
+    }
+    else if(b.dataset.plAct === 'peranan'){
+      await db.collection('pengguna').doc(b.dataset.uid).update({peranan: b.dataset.jadi});
+      toast('Peranan dikemas kini.','ok');
+      const kotak = document.querySelector(`[data-pl-guru="${kod}"]`);
+      kotak.innerHTML = '';
+      document.querySelector(`[data-pl-act="guru"][data-kod="${kod}"]`).click();
+    }
+  }catch(err){ toast(err.message,'err',6000) }
+  finally{ b.disabled = false }
+});
+
 /* ===================== PILIH SEKOLAH ===================== */
 document.querySelectorAll('.seg button').forEach(b=>{
   b.onclick = ()=>{
@@ -1010,12 +1175,16 @@ function bersihKod(v){ return (v||'').toLowerCase().trim().replace(/[^a-z0-9-]/g
 
 async function sertaiSekolah(kod){
   const u = penggunaGoogle || auth.currentUser;
+  const sd = await db.collection('sekolah').doc(kod).get();
+  const adminEmel = sd.exists ? (sd.data().adminEmel||'').toLowerCase().trim() : '';
+  const emelSaya  = (u.email||'').toLowerCase();
   await db.collection('pengguna').doc(uid).set({
     nama: u.displayName || (u.email||'').split('@')[0],
     emel: u.email || '',
     foto: u.photoURL || '',
     sekolahId: kod,
-    peranan: 'guru',
+    // E-mel yang ditetapkan pemilik platform menjadi pentadbir secara automatik
+    peranan: (adminEmel && adminEmel === emelSaya) ? 'admin' : 'guru',
     dicipta: firebase.firestore.FieldValue.serverTimestamp()
   });
 }
@@ -1027,8 +1196,12 @@ $('obSertai').onclick = async ()=>{
     if(!kod) throw new Error('Isi kod sekolah.');
     const s = await db.collection('sekolah').doc(kod).get();
     if(!s.exists) throw new Error('Kod sekolah tidak dijumpai. Semak ejaan dengan pentadbir anda.');
-    if(s.data().terbuka === false)
-      throw new Error('Sekolah ini telah menutup pendaftaran guru baharu. Hubungi pentadbir anda.');
+    if(s.data().terbuka === false){
+      const adminEmel = (s.data().adminEmel||'').toLowerCase().trim();
+      const emelSaya  = (((penggunaGoogle||auth.currentUser)||{}).email||'').toLowerCase();
+      if(!adminEmel || adminEmel !== emelSaya)
+        throw new Error('Sekolah ini telah menutup pendaftaran guru baharu. Hubungi pentadbir anda.');
+    }
     await sertaiSekolah(kod);
     await masukApp(penggunaGoogle || auth.currentUser);
     toast('Selamat datang. Anda kini guru di ' + (s.data().nama || kod.toUpperCase()) + '.','ok',4600);
@@ -1498,6 +1671,9 @@ function isiTetapan(){
   $('sKod').value    = (profil.sekolahId||'').toUpperCase();
   $('sPeranan').value= profil.peranan==='admin' ? 'Pentadbir sekolah' : 'Guru';
   lukisLogo(); lukisPengesah(); kiraFoto();
+
+  $('cardPlatform').classList.toggle('hide', !sayaPemilik);
+  if(sayaPemilik) muatSenaraiPlatform();
 
   lukisFolder();
 
