@@ -958,6 +958,19 @@ async function masukApp(user){
       }catch(e){ /* sekolah tutup atau kebenaran ditolak — jatuh ke skrin pilihan */ }
     }
 
+    // E-mel telah dibenarkan oleh pemilik untuk mana-mana sekolah?
+    if(!snap.exists){
+      try{
+        const emel = (user.email||'').toLowerCase();
+        const q = await db.collection('sekolah')
+          .where('dibenarkan','array-contains', emel).limit(1).get();
+        if(!q.empty){
+          await sertaiSekolah(q.docs[0].id);
+          snap = await db.collection('pengguna').doc(uid).get();
+        }
+      }catch(e){ /* tiada padanan atau kebenaran — jatuh ke skrin pilihan */ }
+    }
+
     if(!snap.exists){
       $('obKod').value = KOD_CADANGAN.toUpperCase();
       $('obKodBaru').value = KOD_CADANGAN.toUpperCase();
@@ -1079,6 +1092,24 @@ async function muatSenaraiPlatform(){
           <button class="btn btn-ghost btn-sm" data-pl-act="link" data-kod="${esc(s.kod)}">Copy link</button>
           <button class="btn btn-ghost btn-sm" data-pl-act="guru" data-kod="${esc(s.kod)}">Teachers</button>
         </div>
+        <div class="field" style="margin:10px 0 0">
+          <label>Tambah guru — e-mel</label>
+          <div style="display:flex;gap:7px">
+            <input data-pl-baru="${esc(s.kod)}" placeholder="guru@moe-dl.edu.my"
+                   autocapitalize="none" style="flex:1;min-width:0">
+            <button class="btn btn-teal btn-sm" data-pl-act="tambah" data-kod="${esc(s.kod)}">Add</button>
+          </div>
+        </div>
+        ${(s.dibenarkan && s.dibenarkan.length) ? `
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:9px">
+          ${s.dibenarkan.map(m=>`
+            <span class="chip" style="display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:11px">
+              ${esc(m)}
+              <button data-pl-act="buangEmel" data-kod="${esc(s.kod)}" data-emel="${esc(m)}"
+                aria-label="Buang ${esc(m)}"
+                style="border:0;background:none;cursor:pointer;font-size:14px;line-height:1;padding:0;color:inherit">&times;</button>
+            </span>`).join('')}
+        </div>` : ''}
         <div data-pl-guru="${esc(s.kod)}" style="margin-top:6px"></div>
       </div>`).join('') || '<p class="hint">Belum ada sekolah didaftarkan.</p>';
   }catch(e){ box.innerHTML = '<p class="hint">Gagal memuatkan: ' + esc(e.message) + '</p>' }
@@ -1147,8 +1178,36 @@ $('plSenarai').addEventListener('click', async e=>{
           <button class="btn btn-ghost btn-sm" data-pl-act="peranan" data-kod="${kod}"
                   data-uid="${d.id}" data-jadi="${g.peranan==='admin'?'guru':'admin'}">
             ${g.peranan==='admin'?'Jadi guru':'Jadi admin'}</button>
+          <button class="btn btn-ghost btn-sm" data-pl-act="buangGuru" data-kod="${kod}"
+                  data-uid="${d.id}" data-emel="${esc((g.emel||'').toLowerCase())}"
+                  data-nama="${esc(g.nama||'')}" style="color:var(--danger)">Buang</button>
         </div>`;
       }).join('') || '<p class="hint">Belum ada guru log masuk.</p>';
+    }
+    else if(b.dataset.plAct === 'tambah'){
+      const inp = document.querySelector(`[data-pl-baru="${kod}"]`);
+      const v = (inp.value||'').trim().toLowerCase();
+      if(!v || !v.includes('@')) throw new Error('Isi e-mel guru yang sah.');
+      await ref.update({dibenarkan: firebase.firestore.FieldValue.arrayUnion(v)});
+      toast(v + ' dibenarkan. Guru itu terus masuk ke ' + kod.toUpperCase() + ' sebaik log masuk.','ok',5400);
+      muatSenaraiPlatform();
+    }
+    else if(b.dataset.plAct === 'buangEmel'){
+      await ref.update({dibenarkan: firebase.firestore.FieldValue.arrayRemove(b.dataset.emel)});
+      muatSenaraiPlatform();
+    }
+    else if(b.dataset.plAct === 'buangGuru'){
+      if(!confirm('Buang ' + (b.dataset.nama||'guru ini') + ' daripada ' + kod.toUpperCase()
+        + '? Laporan yang mereka tulis kekal dalam sekolah.')) return;
+      await db.collection('pengguna').doc(b.dataset.uid).delete();
+      // Tarik juga kebenarannya supaya mereka tidak boleh menyertai semula sendiri
+      if(b.dataset.emel){
+        await ref.update({dibenarkan: firebase.firestore.FieldValue.arrayRemove(b.dataset.emel)}).catch(()=>{});
+      }
+      toast('Guru dibuang daripada ' + kod.toUpperCase() + '.','ok');
+      const kotak = document.querySelector(`[data-pl-guru="${kod}"]`);
+      kotak.innerHTML = '';
+      document.querySelector(`[data-pl-act="guru"][data-kod="${kod}"]`).click();
     }
     else if(b.dataset.plAct === 'peranan'){
       await db.collection('pengguna').doc(b.dataset.uid).update({peranan: b.dataset.jadi});
@@ -1199,7 +1258,8 @@ $('obSertai').onclick = async ()=>{
     if(s.data().terbuka === false){
       const adminEmel = (s.data().adminEmel||'').toLowerCase().trim();
       const emelSaya  = (((penggunaGoogle||auth.currentUser)||{}).email||'').toLowerCase();
-      if(!adminEmel || adminEmel !== emelSaya)
+      const dibenarkan = (s.data().dibenarkan||[]).map(x=>String(x).toLowerCase()).includes(emelSaya);
+      if((!adminEmel || adminEmel !== emelSaya) && !dibenarkan)
         throw new Error('Sekolah ini telah menutup pendaftaran guru baharu. Hubungi pentadbir anda.');
     }
     await sertaiSekolah(kod);

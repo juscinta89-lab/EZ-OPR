@@ -27,7 +27,7 @@ service cloud.firestore {
     // ---------- Profil guru ----------
     match /pengguna/{uid} {
       allow read, update: if masuk() && (request.auth.uid == uid || pemilikPlatform());
-      allow delete: if masuk() && request.auth.uid == uid;
+      allow delete: if masuk() && (request.auth.uid == uid || pemilikPlatform());
 
       // Sertai sekolah: sekolah mesti wujud, dan salah satu daripada —
       // pendaftaran terbuka, pencipta sekolah itu sendiri, atau e-mel guru
@@ -39,6 +39,8 @@ service cloud.firestore {
              sekolahDoc(request.resource.data.sekolahId).terbuka == true
           || sekolahDoc(request.resource.data.sekolahId).pemilik == request.auth.uid
           || sekolahDoc(request.resource.data.sekolahId).adminEmel == request.auth.token.email
+          || ( 'dibenarkan' in sekolahDoc(request.resource.data.sekolahId)
+               && request.auth.token.email in sekolahDoc(request.resource.data.sekolahId).dibenarkan )
         )
         && (
              request.resource.data.peranan == 'guru'
