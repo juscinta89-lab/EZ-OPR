@@ -92,6 +92,11 @@ untuk menerbitkannya.
 **Buat laporan:** Baru → isi maklumat → tambah 4 gambar → **Jana dengan AI** →
 semak dan sunting ayat → **Simpan** → **Lihat pratonton** → **Muat turun PDF**.
 
+**Layout:** tab **Preview** → *Report layout* — pilih **Classic** (rasmi,
+bingkai navy), **Dynamic** (banner serong oren-navy) atau **Modern** (latar
+gelap, kad putih, gambar bulatan). Pilihan disimpan bersama setiap laporan,
+jadi laporan lama kekal dengan layout asalnya.
+
 **Gambar:** selepas memilih fail, editor terbuka. Seret untuk gerakkan, cubit
 dua jari atau guna gelangsar untuk zum, dan *Putar 90°* untuk gambar yang
 terbalik. *Muat penuh* memaparkan seluruh gambar dengan jalur putih; *Isi

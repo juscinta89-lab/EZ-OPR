@@ -344,6 +344,61 @@ textarea{resize:vertical;line-height:1.55}
 .p-sign .s b{display:block;font-size:calc(9pt * var(--sc,1));font-weight:800;line-height:1.25}
 .p-sign .s span{font-size:calc(8.2pt * var(--sc,1));color:#465A72;display:block;line-height:1.3}
 
+/* ===================== LAYOUT 2 — DYNAMIC =====================
+   Banner serong oren/navy. Kesan serong dibuat dengan linear-gradient
+   (bukan clip-path) supaya PDF melalui html2canvas keluar serupa. */
+.page.t2 .p-head{border:0;overflow:visible}
+.page.t2 .p-head .lg{border-right:0;background:#fff;border:.9pt solid #E8DCC4;border-radius:1.6mm}
+.page.t2 .p-head .nm{background:#F59E1B;border-radius:1.6mm 0 0 1.6mm;margin-left:2mm}
+.page.t2 .p-head .nm b{color:var(--pc,#0F2247)}
+.page.t2 .p-head .nm span{color:#4A3406}
+.page.t2 .p-head .un{
+  background:linear-gradient(105deg,#F59E1B 4mm,var(--pc,#0F2247) 4mm);
+  padding-left:8mm;border-radius:0 1.6mm 1.6mm 0
+}
+.page.t2 .p-kind{color:#B87514}
+.page.t2 .p-title{border-radius:2mm}
+.page.t2 .p-meta{border:0;background:#F8F2E7;border-radius:2mm}
+.page.t2 .p-meta > div{border-right:.9pt solid #E8DCC4}
+.page.t2 .p-meta em{color:#B87514}
+.page.t2 .p-sec > h3{
+  display:inline-block;border-left:0;color:#fff;
+  padding:1.1mm 8mm 1.1mm 3.2mm;
+  background:linear-gradient(105deg,var(--pc,#0F2247) calc(100% - 4mm),transparent calc(100% - 4mm))
+}
+.page.t2 .p-shot{border:1.2pt solid var(--pc,#0F2247);border-radius:2mm}
+.page.t2 .p-sign .s hr{border-top:1pt solid #F59E1B}
+
+/* ===================== LAYOUT 3 — MODERN =====================
+   Latar gelap, kandungan dalam kad putih bulat, gambar bulatan.
+   Bulatan guna border-radius (disokong html2canvas), bukan clip-path. */
+.page.t3{background:#101A2E;color:#EAF0F8}
+.page.t3 .p-head{border:0;background:#fff;border-radius:3mm;overflow:hidden}
+.page.t3 .p-head .lg{border-right:.9pt solid #E2E8F0}
+.page.t3 .p-head .nm b{color:#101A2E}
+.page.t3 .p-head .un{background:#16B5A3;color:#06312C}
+.page.t3 .p-head .un span{color:#06312C}
+.page.t3 .p-kind{color:#16B5A3}
+.page.t3 .p-title{background:#16B5A3;color:#06312C}
+.page.t3 .p-meta{border:0;background:#fff;border-radius:3mm;color:#131A26;overflow:hidden}
+.page.t3 .p-meta > div{border-right:.9pt solid #E2E8F0}
+.page.t3 .p-meta em{color:#0C8A7C}
+.page.t3 .p-sec{background:#fff;border-radius:3mm;padding:2.6mm 3.5mm;color:#131A26}
+.page.t3 .p-sec > h3{
+  display:inline-block;border-left:0;background:#16B5A3;color:#06312C;
+  border-radius:99px;padding:.9mm 4.5mm;letter-spacing:1px
+}
+.page.t3 .p-two{background:transparent;padding:0}
+.page.t3 .p-two > div:first-child{margin-right:3mm}
+.page.t3 .p-shot{
+  height:auto;aspect-ratio:1/1;border-radius:50%;
+  border:1.5pt solid #16B5A3;background:#0C1424
+}
+.page.t3 .p-shot span{color:#5B6B85}
+.page.t3 .p-sign .s em{color:#9FB0C8}
+.page.t3 .p-sign .s hr{border-top:.8pt solid #EAF0F8}
+.page.t3 .p-sign .s span{color:#9FB0C8}
+
 /* ===================== CETAK ===================== */
 @page{size:A4 portrait;margin:0}
 @media print{
@@ -532,6 +587,15 @@ textarea{resize:vertical;line-height:1.55}
         </div>
         <button class="btn btn-teal" id="btnDrive" style="margin-bottom:13px">Save to Google Drive</button>
         <p class="hint" id="driveLink" style="text-align:center;margin:-6px 0 13px"></p>
+        <div class="card" style="padding:13px">
+          <label style="margin-bottom:8px">Report layout</label>
+          <div class="seg" id="segLayout" style="margin-bottom:0;background:var(--bg)">
+            <button data-l="1" class="on">Classic</button>
+            <button data-l="2">Dynamic</button>
+            <button data-l="3">Modern</button>
+          </div>
+          <p class="hint">Pilihan layout disimpan bersama laporan ini.</p>
+        </div>
         <div class="card" style="padding:13px">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
             <label for="fScale" style="margin:0;flex:1">Saiz teks laporan — <span id="scaleVal">100%</span></label>
@@ -2016,6 +2080,10 @@ $('btnUjiAI').onclick = async ()=>{
 function render(){
   const l = semasa || {};
   const warna = sekolah.warna || '#0F2247';
+  const t = l.templat || 1;
+  $('page').className = 'page t' + t;          // inline --sc dan --pc kekal
+  document.querySelectorAll('#segLayout button')
+    .forEach(x=> x.classList.toggle('on', +x.dataset.l === t));
   $('page').style.setProperty('--pc', warna);
 
   $('pSekolah').textContent = (sekolah.nama||'NAMA SEKOLAH').toUpperCase();
@@ -2131,6 +2199,16 @@ function autoMuat(){
   skalaPentas();
   return terbaik;
 }
+$('segLayout').addEventListener('click', e=>{
+  const b = e.target.closest('button[data-l]'); if(!b) return;
+  semasa = semasa || {id:null, olehUid:uid, olehNama:(profil&&profil.nama)||''};
+  semasa.templat = +b.dataset.l;
+  render();
+  skalaManual ? pastikanMuat() : autoMuat();
+  skalaPentas();
+  toast('Layout ditukar. Ingat tekan Save pada tab New/Edit untuk menyimpannya.','wait',3600);
+});
+
 $('btnAutoMuat').onclick = ()=>{ skalaManual = false; autoMuat() };
 
 function ukurMuat(){
