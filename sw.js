@@ -1,5 +1,5 @@
 /* ez-OPR service worker — network-first untuk fail app, cache-first untuk aset */
-const CACHE = 'ezopr-v280';
+const CACHE = 'ezopr-v281';
 const ASET = [
   './', './index.html', './config.js', './manifest.json',
   './logo.png', './icon-192.png', './icon-512.png'

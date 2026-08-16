@@ -5,13 +5,12 @@
 /* 1. Konfigurasi Firebase
    Firebase Console → Project settings → Your apps → Web app → Config      */
 window.EZOPR_FIREBASE = {
-  apiKey: "AIzaSyCjBpS0cWNRbgX8gFjABzIO8FwMtR1tJNw",
-  authDomain: "ez-opr.firebaseapp.com",
-  projectId: "ez-opr",
-  storageBucket: "ez-opr.firebasestorage.app",
-  messagingSenderId: "245859591171",
-  appId: "1:245859591171:web:fb9f708b399d94f0cb9a36",
-  measurementId: "G-BS08FY456N"
+  apiKey:            "MASUKKAN_API_KEY_ANDA",
+  authDomain:        "projek-anda.firebaseapp.com",
+  projectId:         "projek-anda",
+  storageBucket:     "projek-anda.appspot.com",
+  messagingSenderId: "000000000000",
+  appId:             "1:000000000000:web:xxxxxxxxxxxxxxxx"
 };
 
 /* 2. Kod sekolah lalai — BIARKAN KOSONG untuk pemasangan berbilang sekolah.
@@ -30,7 +29,7 @@ window.EZOPR_DOMAIN_DIBENARKAN = [];
    apabila log masuk kali pertama selepas peraturan baharu ditampal.
    Pemilik boleh mendaftarkan sekolah, melantik pentadbir, dan mengurus guru
    dari tab Settings. Selepas dituntut, hanya pemilik boleh menambah sekolah. */
-window.EZOPR_PEMILIK_EMEL = "juscinta89@gmail.com";
+window.EZOPR_PEMILIK_EMEL = "";
 
 /* 5. Google OAuth Web Client ID — PENTING untuk iPhone.
    Tanpa ini, guru yang menambah app ke skrin utama iPhone tidak dapat log
@@ -45,7 +44,7 @@ window.EZOPR_PEMILIK_EMEL = "juscinta89@gmail.com";
    Kemudian pada klien yang sama, tambah di bawah:
      Authorized JavaScript origins  → https://namaanda.github.io
      Authorized redirect URIs       → https://namaanda.github.io           */
-window.EZOPR_GOOGLE_CLIENT_ID = "";
+window.EZOPR_GOOGLE_CLIENT_ID = "245859591171-lvqhenf0feiqtntpmckqsj1qt2r9tk9d.apps.googleusercontent.com";
 
 /* 6. Kunci API Google untuk Google Picker (pemilih folder Drive).
    Biarkan kosong untuk guna semula apiKey Firebase di atas — biasanya memadai.
@@ -53,4 +52,4 @@ window.EZOPR_GOOGLE_CLIENT_ID = "";
 window.EZOPR_GOOGLE_API_KEY = "";
 
 /* 7. Versi — naikkan setiap kali fail app dikemas kini                     */
-window.EZOPR_VERSI = "2.8.0";
+window.EZOPR_VERSI = "2.8.1";
