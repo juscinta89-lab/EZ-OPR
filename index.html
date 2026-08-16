@@ -324,6 +324,7 @@ textarea{resize:vertical;line-height:1.55}
 }
 .p-sec ul{margin:0;padding-left:4.4mm}
 .p-sec li{margin-bottom:.7mm;text-align:justify}
+.p-sec p{margin:0;text-align:justify}
 .p-two{display:flex;margin-top:2.6mm}
 .p-two > div{flex:1}
 .p-two > div:first-child{padding-right:3mm}
@@ -334,7 +335,7 @@ textarea{resize:vertical;line-height:1.55}
   display:flex;align-items:center;justify-content:center;margin-right:2.2mm
 }
 .p-shot:last-child{margin-right:0}
-.p-shot img{width:100%;height:100%;object-fit:contain}
+.p-shot img{width:100%;height:100%;object-fit:cover}
 .p-shot span{font-size:calc(7.6pt * var(--sc,1));color:#A5B2C0}
 
 .p-sign{display:flex;flex:none;margin-top:auto;padding-top:6mm}
@@ -399,11 +400,68 @@ textarea{resize:vertical;line-height:1.55}
 .page.t3 .p-sign .s hr{border-top:.8pt solid #EAF0F8}
 .page.t3 .p-sign .s span{color:#9FB0C8}
 
+/* ===================== LAYOUT 4 — POSTER =====================
+   Kad putih berbingkai gelap atas latar hijau lembut, gambar bulatan di
+   ATAS kandungan. Susunan diubah dengan flex `order` (ciri susun atur,
+   bukan lukisan) supaya PDF melalui html2canvas kekal tepat. */
+.page.t4{background:#F2FAF7}
+.page.t4 > *{order:10}
+.page.t4 .p-head{order:1;border:1.1pt solid #14202E;border-radius:3mm;overflow:hidden;background:#fff}
+.page.t4 .p-head .lg{border-right:1.1pt solid #14202E}
+.page.t4 .p-head .nm b{color:#14202E}
+.page.t4 .p-head .un{background:#14202E}
+.page.t4 .p-kind{order:2;color:#0FA292}
+.page.t4 .p-title{order:3;background:#14202E;border-radius:3mm}
+.page.t4 .p-meta{order:4;border:1.1pt solid #14202E;border-radius:3mm;background:#fff;overflow:hidden}
+.page.t4 .p-meta em{color:#0FA292}
+.page.t4 .p-shots{order:5;margin-top:3mm}
+.page.t4 .p-shot{height:auto;aspect-ratio:1/1;border-radius:50%;border:1.1pt solid #14202E;background:#fff}
+.page.t4 .p-shot span{color:#9AB3AC}
+.page.t4 .p-sec{background:#fff;border:1.1pt solid #14202E;border-radius:3mm;padding:2.6mm 3.5mm}
+.page.t4 .p-sec > h3{
+  display:inline-block;border-left:0;background:#19C3AE;color:#0A3B33;
+  border-radius:99px;padding:.9mm 4.5mm;letter-spacing:1px
+}
+.page.t4 .p-two{background:transparent;border:0;padding:0}
+.page.t4 .p-two > div:first-child{margin-right:3mm}
+.page.t4 .p-sign{order:99}
+.page.t4 .p-sign .s hr{border-top:.9pt solid #14202E}
+
+/* ===================== LAYOUT 4 — COMPLETE =====================
+   Gambar bulatan di bahagian atas (disusun semula dengan flex order),
+   seksyen dalam kad putih berbingkai mint dengan pil tajuk yang menindih
+   birai atas kad. "Butiran Pelaksanaan" dinamakan semula RUMUSAN AKTIVITI
+   dan dipaparkan sebagai perenggan. */
+.page.t4{background:#F3FAF7}
+.page.t4 > *{order:2}
+.page.t4 .p-head{order:0;border:1pt solid #CBE7DD;background:#fff;border-radius:4mm;overflow:hidden}
+.page.t4 .p-kind{order:0;color:#0E9C8C}
+.page.t4 .p-title{order:0;background:#0E9C8C;border-radius:3mm}
+.page.t4 .p-meta{order:0;border:1pt solid #CBE7DD;background:#fff;border-radius:3mm;overflow:hidden}
+.page.t4 .p-shots{order:1;margin-top:3.6mm}
+.page.t4 .p-sign{order:3}
+.page.t4 .p-head .lg{border-right:1pt solid #E2F2EC}
+.page.t4 .p-head .nm b{color:#0B3B34}
+.page.t4 .p-head .un{background:#0E9C8C}
+.page.t4 .p-meta > div{border-right:1pt solid #E2F2EC}
+.page.t4 .p-meta em{color:#0E9C8C}
+.page.t4 .p-shot{height:auto;aspect-ratio:1/1;border-radius:50%;border:1.5pt solid #0E9C8C;background:#fff}
+.page.t4 .p-sec{border:1pt solid #CBE7DD;background:#fff;border-radius:3mm;padding:3mm 3.6mm 2.4mm;margin-top:4.8mm}
+.page.t4 .p-sec > h3{
+  display:inline-block;border-left:0;background:#0E9C8C;color:#fff;
+  border-radius:99px;padding:.9mm 4.5mm;margin:-5.6mm 0 1.2mm;position:relative
+}
+.page.t4 .p-two{margin-top:4.8mm}
+.page.t4 .p-two > div:first-child{margin-right:3mm}
+.page.t4 #pButiran{padding-left:0}
+.page.t4 #pButiran li{list-style:none;margin:0}
+.page.t4 .p-sign .s hr{border-top:.8pt solid #0E9C8C}
+
 /* ===================== CETAK ===================== */
 @page{size:A4 portrait;margin:0}
 @media print{
   body{background:#fff}
-  .appbar,.nav,.noprint,.tab:not(#tab-view){display:none !important}
+  .appbar,.nav,.noprint,.modal,.toast,.tab:not(#tab-view){display:none !important}
   .body{padding:0;max-width:none}
   #tab-view{display:block !important}
   .stage{background:#fff;padding:0;border:0;overflow:visible}
@@ -412,7 +470,11 @@ textarea{resize:vertical;line-height:1.55}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 
-@media (max-width:480px){ .row{grid-template-columns:1fr} }
+@media (max-width:480px){
+  .row{grid-template-columns:1fr}
+  .btn-flex .btn{font-size:13.5px;padding:13px 8px}
+  .seg button{font-size:12px}
+}
 @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
 </style>
 </head>
@@ -431,6 +493,8 @@ textarea{resize:vertical;line-height:1.55}
       <p class="sub" id="aSub">Guna akaun Google MOE / DELIMa sekolah anda.</p>
 
       <div id="diag" class="diag hide"></div>
+
+      <div id="gisBtn" class="hide" style="display:flex;justify-content:center;margin-bottom:4px"></div>
 
       <button class="btn btn-google" id="btnGoogle">
         <svg viewBox="0 0 48 48" aria-hidden="true">
@@ -462,7 +526,7 @@ textarea{resize:vertical;line-height:1.55}
       <h2>Sekolah anda</h2>
       <p class="sub" id="obNama">Sertai sekolah sedia ada atau daftarkan yang baharu.</p>
 
-      <div class="seg">
+      <div class="seg" id="segMasuk">
         <button data-m="join" class="on">Sertai sekolah</button>
         <button data-m="new">Daftar baharu</button>
       </div>
@@ -501,6 +565,8 @@ textarea{resize:vertical;line-height:1.55}
     <div class="appbar-row">
       <img src="logo.png" alt="">
       <h1>ez-OPR<small id="barSub">—</small></h1>
+      <span id="offTag" class="hide" style="font-size:10.5px;font-weight:700;letter-spacing:.5px;
+        background:#B8791A;color:#fff;padding:4px 8px;border-radius:7px;flex:none">LUAR TALIAN</span>
       <button class="icon-btn" id="btnKeluar" title="Log keluar" aria-label="Log keluar">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 17v1.5a2 2 0 01-2 2H6a2 2 0 01-2-2v-13a2 2 0 012-2h7a2 2 0 012 2V7"/><path d="M10.5 12h9.5"/><path d="M17.5 9l3 3-3 3"/></svg>
       </button>
@@ -514,6 +580,10 @@ textarea{resize:vertical;line-height:1.55}
       <div class="search">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
         <input id="cari" placeholder="Cari nama program…">
+      </div>
+      <div class="seg" id="segTapis" style="margin-bottom:13px">
+        <button data-f="semua" class="on">Semua</button>
+        <button data-f="saya">Laporan saya</button>
       </div>
       <div id="senarai"></div>
     </div>
@@ -560,6 +630,7 @@ textarea{resize:vertical;line-height:1.55}
         <h2>Isi kandungan laporan</h2>
         <div class="field"><label for="fObjektif">Objektif <span style="font-weight:500">(satu baris satu ayat)</span></label><textarea id="fObjektif" rows="3"></textarea></div>
         <div class="field"><label for="fButiran">Butiran pelaksanaan</label><textarea id="fButiran" rows="4"></textarea></div>
+        <div class="field"><label for="fRumusan">Rumusan aktiviti <span style="font-weight:500">(pilihan — perenggan ringkas)</span></label><textarea id="fRumusan" rows="2"></textarea></div>
         <div class="row">
           <div class="field"><label for="fKekuatan">Kekuatan</label><textarea id="fKekuatan" rows="3"></textarea></div>
           <div class="field"><label for="fKelemahan">Kelemahan</label><textarea id="fKelemahan" rows="3"></textarea></div>
@@ -567,8 +638,11 @@ textarea{resize:vertical;line-height:1.55}
         <div class="field"><label for="fPenambahbaikan">Penambahbaikan</label><textarea id="fPenambahbaikan" rows="3"></textarea></div>
       </div>
 
+      <div class="status" id="milikOrang" style="display:none"></div>
+
       <div class="btn-flex">
         <button class="btn btn-danger" id="btnBuang">Delete</button>
+        <button class="btn btn-ghost" id="btnSalin">Duplicate</button>
         <button class="btn btn-main" id="btnSimpan">Save</button>
       </div>
       <button class="btn btn-blue" id="btnPratonton">Preview</button>
@@ -577,6 +651,7 @@ textarea{resize:vertical;line-height:1.55}
     <!-- ---------- PRATONTON ---------- -->
     <div class="tab" id="tab-view">
       <div class="noprint">
+        <button class="btn btn-ghost btn-sm" id="btnEditSemula" style="width:100%;margin-bottom:11px">&larr; Edit report</button>
         <div class="fit" id="fit">
           <div class="fit-track"><div class="fit-bar" id="fitBar"></div></div>
           <div class="fit-label" id="fitLabel">Muat 1 halaman</div>
@@ -585,14 +660,13 @@ textarea{resize:vertical;line-height:1.55}
           <button class="btn btn-main" id="btnPdf">Download PDF</button>
           <button class="btn btn-ghost" id="btnCetak">Print</button>
         </div>
-        <button class="btn btn-teal" id="btnDrive" style="margin-bottom:13px">Save to Google Drive</button>
-        <p class="hint" id="driveLink" style="text-align:center;margin:-6px 0 13px"></p>
         <div class="card" style="padding:13px">
           <label style="margin-bottom:8px">Report layout</label>
           <div class="seg" id="segLayout" style="margin-bottom:0;background:var(--bg)">
             <button data-l="1" class="on">Classic</button>
             <button data-l="2">Dynamic</button>
             <button data-l="3">Modern</button>
+            <button data-l="4">Complete</button>
           </div>
           <p class="hint">Pilihan layout disimpan bersama laporan ini.</p>
         </div>
@@ -601,7 +675,7 @@ textarea{resize:vertical;line-height:1.55}
             <label for="fScale" style="margin:0;flex:1">Saiz teks laporan — <span id="scaleVal">100%</span></label>
             <button class="btn btn-ghost btn-sm" id="btnAutoMuat" style="padding:7px 12px">Auto fit</button>
           </div>
-          <input id="fScale" type="range" min="78" max="132" step="1" value="100" style="padding:0;border:0;background:none">
+          <input id="fScale" type="range" min="70" max="132" step="1" value="100" style="padding:0;border:0;background:none">
           <p class="hint">Auto fit memilih saiz teks terbesar yang masih muat satu halaman.</p>
         </div>
       </div>
@@ -623,7 +697,8 @@ textarea{resize:vertical;line-height:1.55}
               <div><em>SASARAN</em><strong id="pSasaran">—</strong></div>
             </div>
             <div class="p-sec"><h3>OBJEKTIF</h3><ul id="pObjektif"></ul></div>
-            <div class="p-sec"><h3>BUTIRAN PELAKSANAAN</h3><ul id="pButiran"></ul></div>
+            <div class="p-sec"><h3 id="hButiran">BUTIRAN PELAKSANAAN</h3><ul id="pButiran"></ul></div>
+            <div class="p-sec" id="pSecRumusan" style="display:none"><h3>RUMUSAN AKTIVITI</h3><p id="pRumusan"></p></div>
             <div class="p-two">
               <div class="p-sec" style="margin:0"><h3>KEKUATAN</h3><ul id="pKekuatan"></ul></div>
               <div class="p-sec" style="margin:0"><h3>KELEMAHAN</h3><ul id="pKelemahan"></ul></div>
@@ -714,31 +789,6 @@ textarea{resize:vertical;line-height:1.55}
         </div>
         <button class="btn btn-teal" id="plTambah">Add school</button>
         <div id="plSenarai" style="margin-top:16px"></div>
-      </div>
-
-      <div class="card">
-        <h2>Simpanan Google Drive</h2>
-        <p class="hint" style="margin:-6px 0 12px">
-          Pilih folder tempat PDF disimpan. Boleh folder kongsi sekolah — anda perlu
-          memilihnya sekali sahaja untuk memberi kebenaran kepada app.
-        </p>
-        <div class="field">
-          <label>Folder semasa</label>
-          <input id="sFolder" readonly value="Folder app sendiri">
-        </div>
-        <div class="btn-row" style="margin-bottom:12px">
-          <button class="btn btn-ghost btn-sm" id="btnPilihFolder" style="width:100%">Choose folder</button>
-          <button class="btn btn-ghost btn-sm" id="btnFolderAsal" style="width:100%">Use app folder</button>
-        </div>
-        <div class="field" style="margin-bottom:0">
-          <label for="sFolderPaut">Atau tampal pautan folder yang dikongsi</label>
-          <input id="sFolderPaut" placeholder="https://drive.google.com/drive/folders/...">
-          <p class="hint">
-            Pautan sahaja tidak memberi kebenaran. Selepas menampal, tekan
-            <b>Choose folder</b> dan pilih folder yang sama di bawah
-            <b>Dikongsi dengan saya</b> — Google memerlukan pemilihan itu.
-          </p>
-        </div>
       </div>
 
       <div class="card" id="cardJemput">
@@ -926,11 +976,11 @@ async function fotoKunci(){
 }
 
 /* ===================== FIREBASE ===================== */
-function diag(tajuk, isi){
+function diag(tajuk, isi, kekalBoleh){
   const d = $('diag');
   d.innerHTML = `<b>${tajuk}</b>${isi}`;
   d.classList.remove('hide');
-  $('btnGoogle').disabled = true;
+  $('btnGoogle').disabled = !kekalBoleh;
 }
 
 function mula(){
@@ -960,8 +1010,23 @@ function mula(){
     return diag('Firebase gagal dimulakan', e.message);
   }
   db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+
+  // Hasil ubah hala (desktop). Pada iOS PWA ini biasanya kosong — sebab itu
+  // aliran GIS di bawah menjadi laluan utama.
   auth.getRedirectResult().catch(e=> toast(ralatAuth(e),'err',7000));
   auth.onAuthStateChanged(kendaliAuth);
+
+  siapkanGIS().then(siap=>{
+    if(siap) return;
+    if(dalamPWA && iOS){
+      diag('Log masuk perlu disiapkan untuk iPhone',
+        'Pentadbir perlu mengisi <b>EZOPR_GOOGLE_CLIENT_ID</b> dalam <code>config.js</code> '
+        + 'supaya log masuk berfungsi apabila app dibuka dari skrin utama iPhone. '
+        + 'Sementara itu, buka <b>' + esc(location.host) + '</b> melalui Safari untuk log masuk.');
+      $('btnGoogle').disabled = false;   // masih boleh cuba
+      $('diag').classList.remove('hide');
+    }
+  });
 }
 
 async function kendaliAuth(u){
@@ -969,7 +1034,7 @@ async function kendaliAuth(u){
     // Setiap rujukan kepada sekolah terdahulu mesti dilupakan, jika tidak
     // ID laporan lama akan terbawa ke sekolah akaun yang berikutnya.
     uid=null; profil=null; sekolah=null; penggunaGoogle=null;
-    semasa=null; laporan=[]; photos=[null,null,null,null]; tokenDrive=null;
+    semasa=null; laporan=[]; photos=[null,null,null,null];
     tunjuk('auth'); return;
   }
 
@@ -1040,7 +1105,7 @@ async function masukApp(user){
       $('obKodBaru').value = KOD_CADANGAN.toUpperCase();
       // Selepas platform dituntut, hanya pemilik boleh mendaftarkan sekolah baharu
       const sekat = platformAda && !sayaPemilik;
-      document.querySelector('.seg button[data-m="new"]').classList.toggle('hide', sekat);
+      document.querySelector('#segMasuk button[data-m="new"]').classList.toggle('hide', sekat);
       tunjuk('onboard');
       return;
     }
@@ -1068,7 +1133,70 @@ function tunjuk(s){
   ['auth','onboard','app'].forEach(n=> $('scr-'+n).classList.toggle('on', n===s));
 }
 
-/* ===================== AUTH — Google Sign-In ===================== */
+/* ===================== AUTH — Google Sign-In =====================
+   Aliran utama menggunakan Google Identity Services (GIS): token ID diterima
+   dalam halaman yang sama, kemudian ditukar kepada sesi Firebase. Ini perlu
+   kerana signInWithRedirect gagal dalam PWA iOS — ubah hala ke
+   <projek>.firebaseapp.com meninggalkan PWA, dan Safari menyekat storan
+   merentas domain itu, jadi guru terperangkap pada skrin log masuk.
+   signInWithPopup dikekalkan sebagai sandaran untuk desktop.               */
+
+const dalamPWA = window.matchMedia('(display-mode: standalone)').matches
+              || window.navigator.standalone === true;
+const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+         || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+function clientId(){ return (window.EZOPR_GOOGLE_CLIENT_ID || '').trim() }
+
+function muatGIS(){
+  return new Promise((res,rej)=>{
+    if(window.google && google.accounts && google.accounts.id) return res();
+    const s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.async = true; s.defer = true;
+    s.onload = ()=> res();
+    s.onerror = ()=> rej(new Error('Gagal memuatkan Google Sign-In. Semak sambungan internet.'));
+    document.head.appendChild(s);
+  });
+}
+
+/* Butang rasmi Google dipaparkan bila Client ID tersedia. Ia perlu dirender
+   oleh GIS sendiri — butang tersuai tidak boleh mencetuskan aliran ini. */
+async function siapkanGIS(){
+  const cid = clientId();
+  if(!cid) return false;
+  try{
+    await muatGIS();
+    google.accounts.id.initialize({
+      client_id: cid,
+      ux_mode: 'popup',
+      auto_select: false,
+      cancel_on_tap_outside: true,
+      callback: async (resp)=>{
+        if(!resp || !resp.credential) return;
+        const b = $('btnGoogle'); if(b) b.disabled = true;
+        try{
+          const cred = firebase.auth.GoogleAuthProvider.credential(resp.credential);
+          await auth.signInWithCredential(cred);
+        }catch(e){ toast(ralatAuth(e),'err',7000) }
+        finally{ if(b) b.disabled = false }
+      }
+    });
+    const kotak = $('gisBtn');
+    kotak.innerHTML = '';
+    google.accounts.id.renderButton(kotak, {
+      type:'standard', theme:'outline', size:'large',
+      text:'signin_with', shape:'pill', logo_alignment:'center',
+      width: Math.min(360, Math.max(220, kotak.clientWidth || 300))
+    });
+    kotak.classList.remove('hide');
+    $('btnGoogle').classList.add('hide');
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
 $('btnGoogle').onclick = async ()=>{
   const b = $('btnGoogle'); b.disabled = true;
   const provider = new firebase.auth.GoogleAuthProvider();
@@ -1076,15 +1204,24 @@ $('btnGoogle').onclick = async ()=>{
   try{
     await auth.signInWithPopup(provider);
   }catch(e){
-    // Tetingkap timbul kerap disekat dalam PWA dan pelayar terbenam —
-    // beralih kepada aliran ubah hala.
-    if(['auth/popup-blocked','auth/popup-closed-by-user','auth/cancelled-popup-request',
-        'auth/operation-not-supported-in-this-environment'].includes(e.code)){
-      try{ return await auth.signInWithRedirect(provider) }
-      catch(e2){ toast(ralatAuth(e2),'err',7000) }
-    }else{
-      toast(ralatAuth(e),'err',7000);
+    const tetingkapGagal = ['auth/popup-blocked','auth/popup-closed-by-user',
+      'auth/cancelled-popup-request','auth/operation-not-supported-in-this-environment']
+      .includes(e.code);
+
+    if(!tetingkapGagal){ toast(ralatAuth(e),'err',7000); return }
+
+    // Ubah hala meninggalkan PWA pada iOS dan tidak pernah kembali —
+    // beritahu guru cara keluar daripada keadaan itu.
+    if(dalamPWA && iOS){
+      diag('Log masuk tidak berjaya dalam mod skrin utama',
+        'Buka <b>' + esc(location.host) + '</b> melalui pelayar Safari, log masuk di situ, '
+        + 'kemudian kembali ke ikon skrin utama. Jika masalah berulang, minta pentadbir '
+        + 'sekolah menyiapkan Client ID Google supaya log masuk berfungsi terus dalam app.');
+      $('btnGoogle').disabled = false;
+      return;
     }
+    try{ return await auth.signInWithRedirect(provider) }
+    catch(e2){ toast(ralatAuth(e2),'err',7000) }
   }finally{ b.disabled = false }
 };
 
@@ -1094,7 +1231,9 @@ function ralatAuth(e){
     'auth/operation-not-allowed':'Log masuk Google belum diaktifkan. Buka Firebase Console → Authentication → Sign-in method → Google → Enable.',
     'auth/network-request-failed':'Tiada sambungan internet.',
     'auth/too-many-requests':'Terlalu banyak cubaan. Cuba lagi sebentar.',
-    'auth/popup-closed-by-user':'Log masuk dibatalkan.'
+    'auth/popup-closed-by-user':'Log masuk dibatalkan.',
+    'auth/invalid-credential':'Token log masuk tidak sah. Cuba sekali lagi.',
+    'auth/account-exists-with-different-credential':'Akaun ini sudah didaftarkan dengan kaedah log masuk yang lain.'
   };
   return m[e.code] || e.message;
 }
@@ -1285,9 +1424,9 @@ $('plSenarai').addEventListener('click', async e=>{
 });
 
 /* ===================== PILIH SEKOLAH ===================== */
-document.querySelectorAll('.seg button').forEach(b=>{
+document.querySelectorAll('#segMasuk button').forEach(b=>{
   b.onclick = ()=>{
-    document.querySelectorAll('.seg button').forEach(x=> x.classList.toggle('on', x===b));
+    document.querySelectorAll('#segMasuk button').forEach(x=> x.classList.toggle('on', x===b));
     $('obJoin').classList.toggle('hide', b.dataset.m !== 'join');
     $('obNew').classList.toggle('hide', b.dataset.m !== 'new');
   };
@@ -1407,7 +1546,9 @@ async function muatLaporan(){
 
 function lukisSenarai(){
   const cari = ($('cari').value||'').toLowerCase();
-  const senarai = laporan.filter(l=> !cari || (l.tajuk||'').toLowerCase().includes(cari));
+  const senarai = laporan.filter(l=>
+    (!cari || (l.tajuk||'').toLowerCase().includes(cari)) &&
+    (tapisSenarai !== 'saya' || l.olehUid === uid));
   const box = $('senarai');
 
   if(!senarai.length){
@@ -1437,11 +1578,18 @@ function lukisSenarai(){
         <div class="no"><b>${esc(l.bil||'—')}</b><span>BIL</span></div>
         <div class="txt">
           <b>${esc(l.tajuk||'Tanpa tajuk')}</b>
-          <span><span class="chip">${esc(l.unit||'—')}</span>${tarikhPendek(l.tarikh)} · ${esc(l.olehNama||'')}</span>
+          <span><span class="chip">${esc(l.unit||'—')}</span>${tarikhPendek(l.tarikh)} · ${l.olehUid===uid ? 'Anda' : esc(l.olehNama||'')}</span>
         </div>
       </div>`).join('')}
   `).join('');
 }
+let tapisSenarai = 'semua';
+$('segTapis').addEventListener('click', e=>{
+  const b = e.target.closest('button[data-f]'); if(!b) return;
+  document.querySelectorAll('#segTapis button').forEach(x=> x.classList.toggle('on', x===b));
+  tapisSenarai = b.dataset.f;
+  lukisSenarai();
+});
 $('cari').addEventListener('input', lukisSenarai);
 $('senarai').addEventListener('click', e=>{
   const it = e.target.closest('.item');
@@ -1455,15 +1603,16 @@ function isiUnitPilihan(){
 
 function baru(){
   skalaManual = false;
-  semasa = {id:null, olehUid:uid, olehNama:profil.nama};
-  ['fTajuk','fMasa','fTempat','fSasaran','fNota','fObjektif','fButiran','fKekuatan','fKelemahan','fPenambahbaikan']
+  semasa = {id:null, olehUid:uid, olehNama:profil.nama,
+            templat: +(local.get('ezopr.layout')||1) || 1};
+  ['fTajuk','fMasa','fTempat','fSasaran','fNota','fObjektif','fButiran','fRumusan','fKekuatan','fKelemahan','fPenambahbaikan']
     .forEach(id=> $(id).value = '');
   $('fTarikh').value = new Date().toISOString().slice(0,10);
   $('fUnit').selectedIndex = 0;
   $('fBil').value = bilSeterusnya($('fUnit').value);
   photos = [null,null,null,null];
   lukisSlot();
-  $('btnBuang').style.display = 'none';
+  tandaMilik();
 }
 
 function bilSeterusnya(unit){
@@ -1488,6 +1637,7 @@ async function buka(id){
   $('fNota').value   = l.nota||'';
   if(!sekolah.unit.includes(l.unit) && l.unit) sekolah.unit.push(l.unit), isiUnitPilihan();
   $('fUnit').value   = l.unit || sekolah.unit[0];
+  $('fRumusan').value         = l.rumusan||'';
   $('fObjektif').value        = (l.objektif||[]).join('\n');
   $('fButiran').value         = (l.butiran||[]).join('\n');
   $('fKekuatan').value        = (l.kekuatan||[]).join('\n');
@@ -1496,9 +1646,33 @@ async function buka(id){
 
   photos = await fotoAmbil(id);
   lukisSlot();
-  const boleh = l.olehUid===uid || profil.peranan==='admin';
-  $('btnBuang').style.display = boleh ? 'flex' : 'none';
+  skalaManual = false;
+  tandaMilik();
   tab('edit');
+}
+
+/* Guru boleh menyunting laporan sendiri; laporan guru lain dibuka sebagai
+   rujukan sahaja, dengan pilihan menyalinnya menjadi laporan sendiri. */
+function tandaMilik(){
+  const l = semasa || {};
+  const baharu = !l.id;
+  const milikSaya = baharu || l.olehUid === uid;
+  const bolehSunting = milikSaya || (profil && profil.peranan === 'admin');
+
+  $('btnBuang').style.display = (!baharu && bolehSunting) ? 'flex' : 'none';
+  $('btnSalin').style.display = baharu ? 'none' : 'flex';
+  $('btnSimpan').style.display = bolehSunting ? 'flex' : 'none';
+
+  const n = $('milikOrang');
+  if(!baharu && !milikSaya){
+    n.textContent = 'Laporan ini ditulis oleh ' + (l.olehNama || 'guru lain') + '.'
+      + (bolehSunting ? ' Sebagai pentadbir anda boleh menyuntingnya.'
+                      : ' Tekan Duplicate untuk membuat salinan sebagai laporan anda sendiri.');
+    n.className = 'status on wait';
+    n.style.display = 'block';
+  }else{
+    n.style.display = 'none';
+  }
 }
 
 function isiBorangKeSemasa(){
@@ -1512,6 +1686,7 @@ function isiBorangKeSemasa(){
     unit:$('fUnit').value,
     bil:$('fBil').value.trim(),
     nota:$('fNota').value.trim(),
+    rumusan:$('fRumusan').value.trim(),
     objektif:lines($('fObjektif').value),
     butiran:lines($('fButiran').value),
     kekuatan:lines($('fKekuatan').value),
@@ -1550,10 +1725,14 @@ $('btnSimpan').onclick = async ()=>{
 
     await fotoSimpan(id, photos);
     await muatLaporan();
-    $('btnBuang').style.display = 'flex';
+    tandaMilik();
     toast('Laporan disimpan.','ok');
   }catch(e){
-    toast('Gagal simpan: ' + e.message, 'err', 5000);
+    if(e.code === 'permission-denied'){
+      toast('Laporan ini milik guru lain, jadi ia tidak boleh diubah. Tekan Duplicate untuk menyimpannya sebagai laporan anda.','err',7000);
+    }else{
+      toast('Gagal simpan: ' + e.message, 'err', 5000);
+    }
   }finally{ b.disabled = false }
 };
 
@@ -1568,6 +1747,30 @@ $('btnBuang').onclick = async ()=>{
     tab('list');
     toast('Laporan dipadam.','ok');
   }catch(e){ toast('Gagal padam: ' + e.message,'err') }
+};
+
+$('btnSalin').onclick = async ()=>{
+  if(!semasa || !semasa.id) return;
+  const asal = semasa;
+  isiBorangKeSemasa();
+  const salinan = {...semasa};
+  delete salinan.id;
+  salinan.olehUid = uid;
+  salinan.olehNama = profil.nama;
+  salinan.tajuk = (salinan.tajuk || 'Laporan') + ' (salinan)';
+  salinan.tarikh = new Date().toISOString().slice(0,10);
+  salinan.bil = bilSeterusnya(salinan.unit || $('fUnit').value);
+
+  semasa = salinan;
+  $('fTajuk').value  = salinan.tajuk;
+  $('fTarikh').value = salinan.tarikh;
+  $('fBil').value    = salinan.bil;
+  // Gambar milik laporan asal kekal di peranti ini, jadi ia boleh diguna semula
+  photos = await fotoAmbil(asal.id);
+  lukisSlot();
+  tandaMilik();
+  window.scrollTo({top:0, behavior:'smooth'});
+  toast('Salinan disediakan. Semak tajuk dan tarikh, kemudian tekan Save.','ok',5000);
 };
 
 $('btnPratonton').onclick = ()=> tab('view');
@@ -1793,13 +1996,12 @@ function isiTetapan(){
   $('sKey').value    = sekolah.aiKey||'';
   $('sPengguna').value = profil.nama||'';
   $('sKod').value    = (profil.sekolahId||'').toUpperCase();
-  $('sPeranan').value= profil.peranan==='admin' ? 'Pentadbir sekolah' : 'Guru';
+  $('sPeranan').value= sayaPemilik ? 'Pemilik platform' : (profil.peranan==='admin' ? 'Pentadbir sekolah' : 'Guru');
   lukisLogo(); lukisPengesah(); kiraFoto();
 
   $('cardPlatform').classList.toggle('hide', !sayaPemilik);
   if(sayaPemilik) muatSenaraiPlatform();
 
-  lukisFolder();
 
   const asas = location.href.split('?')[0].split('#')[0];
   $('sPautan').value = asas + '?s=' + profil.sekolahId;
@@ -1871,12 +2073,6 @@ function kendaliPengesah(e){
 $('signers').addEventListener('input', kendaliPengesah);
 $('signersTpl').addEventListener('input', kendaliPengesah);
 
-$('sFolderPaut').addEventListener('change', ()=>{
-  const id = idDariPautan($('sFolderPaut').value);
-  if(!id) return toast('Pautan folder tidak dikenali.','err');
-  toast('Pautan dikenali. Sekarang tekan Choose folder dan pilih folder itu untuk memberi kebenaran.','wait',6000);
-});
-
 $('btnSalinPautan').onclick = async ()=>{
   const teks = $('sPautan').value;
   try{
@@ -1907,7 +2103,7 @@ $('btnSimpanTetapan').onclick = async ()=>{
         terbuka:$('sTerbuka').checked
       });
       if(!sekolah.unit.length) sekolah.unit = ['KURIKULUM'];
-      const {dicipta, ...simpan} = sekolah;
+      const {dicipta, dibenarkan, adminEmel, ...simpan} = sekolah;
       await db.collection('sekolah').doc(profil.sekolahId).set(simpan, {merge:true});
       isiUnitPilihan();
     }
@@ -1947,7 +2143,7 @@ Maklumat aktiviti:
 Tulis dalam Bahasa Melayu baku dan formal. Setiap ayat lengkap dan padat, 12 hingga 24 patah perkataan. Jangan letak nombor atau simbol bullet di hadapan ayat. Jangan bombastik.
 
 Balas HANYA objek JSON tulen tanpa markdown:
-{"objektif":["3 objektif"],"butiran":["4 butiran pelaksanaan mengikut urutan"],"kekuatan":["3 kekuatan"],"kelemahan":["2 kelemahan yang jujur dan munasabah"],"penambahbaikan":["2 cadangan penambahbaikan yang praktikal"]}`;
+{"objektif":["3 objektif"],"butiran":["4 butiran pelaksanaan mengikut urutan"],"rumusan":"satu perenggan 2 hingga 3 ayat merumuskan perjalanan dan hasil keseluruhan aktiviti","kekuatan":["3 kekuatan"],"kelemahan":["2 kelemahan yang jujur dan munasabah"],"penambahbaikan":["2 cadangan penambahbaikan yang praktikal"]}`;
 }
 
 /* Ambil senarai model sebenar daripada kunci API — Google kerap menamatkan
@@ -2056,6 +2252,7 @@ $('btnAI').onclick = async ()=>{
     const put = (id,arr)=> $(id).value = (arr||[]).join('\n');
     put('fObjektif', j.objektif);
     put('fButiran', j.butiran);
+    $('fRumusan').value = (j.rumusan||'').toString().trim();
     put('fKekuatan', j.kekuatan);
     put('fKelemahan', j.kelemahan);
     put('fPenambahbaikan', j.penambahbaikan);
@@ -2102,14 +2299,18 @@ function render(){
     : '<li style="color:#A5B2C0">—</li>';
   ul('pObjektif', l.objektif);
   ul('pButiran', l.butiran);
+  const rum = (l.rumusan||'').trim();
+  $('pRumusan').textContent = rum;
+  $('pSecRumusan').style.display = rum ? '' : 'none';
   ul('pKekuatan', l.kekuatan);
   ul('pKelemahan', l.kelemahan);
   ul('pPenambahbaikan', l.penambahbaikan);
 
-  $('pShots').innerHTML = photos.map((p,i)=>{
-    const s = srcHasil(p);
-    return `<div class="p-shot">${s?`<img src="${s}" alt="">`:`<span>Gambar ${i+1}</span>`}</div>`;
-  }).join('');
+  // Hanya gambar yang diisi dipaparkan pada laporan akhir — tiada kotak
+  // "Gambar 3" kosong dalam dokumen rasmi. Baris disembunyikan jika tiada langsung.
+  const adaGambar = photos.map(srcHasil).filter(Boolean);
+  $('pShots').style.display = adaGambar.length ? '' : 'none';
+  $('pShots').innerHTML = adaGambar.map(s=>`<div class="p-shot"><img src="${s}" alt=""></div>`).join('');
 
   const aktif = ((profil && profil.pengesah) || sekolah.pengesah || []).filter(s=> (s.nama||'').trim());
   $('pSign').innerHTML = aktif.map(s=>`
@@ -2203,6 +2404,7 @@ $('segLayout').addEventListener('click', e=>{
   const b = e.target.closest('button[data-l]'); if(!b) return;
   semasa = semasa || {id:null, olehUid:uid, olehNama:(profil&&profil.nama)||''};
   semasa.templat = +b.dataset.l;
+  local.set('ezopr.layout', b.dataset.l);
   render();
   skalaManual ? pastikanMuat() : autoMuat();
   skalaPentas();
@@ -2269,216 +2471,6 @@ $('btnPdf').onclick = async ()=>{
   finally{ b.disabled=false; b.textContent='Download PDF' }
 };
 
-/* ===================== GOOGLE DRIVE ===================== */
-/* Skop drive.file diminta hanya apabila guru menekan butang Drive, bukan
-   semasa log masuk — app hanya nampak fail yang diciptanya sendiri. */
-let tokenDrive = null;
-
-async function ambilTokenDrive(paksa){
-  if(tokenDrive && !paksa) return tokenDrive;
-  const p = new firebase.auth.GoogleAuthProvider();
-  p.addScope('https://www.googleapis.com/auth/drive.file');
-  p.setCustomParameters({ prompt:'consent' });
-  try{
-    const res = await auth.currentUser.reauthenticateWithPopup(p);
-    tokenDrive = res.credential.accessToken;
-    return tokenDrive;
-  }catch(e){
-    if(['auth/popup-blocked','auth/popup-closed-by-user','auth/cancelled-popup-request'].includes(e.code))
-      throw new Error('Tetingkap kebenaran Google ditutup atau disekat. Cuba sekali lagi dan benarkan tetingkap timbul.');
-    throw new Error(ralatAuth(e));
-  }
-}
-
-/* Folder yang dipilih guru melalui Google Picker. Disimpan setiap peranti
-   dan disalin ke profil supaya ikut guru ke peranti lain. */
-function kunciFolder(){ return 'ezopr.folderPilih.' + profil.sekolahId }
-
-function folderPilihan(){
-  try{
-    const j = JSON.parse(local.get(kunciFolder()) || 'null');
-    if(j && j.id) return j;
-  }catch(e){}
-  if(profil && profil.driveFolder && profil.driveFolder.id) return profil.driveFolder;
-  return null;
-}
-
-function simpanFolder(f){
-  if(f) local.set(kunciFolder(), JSON.stringify(f));
-  else  { try{ localStorage.removeItem(kunciFolder()) }catch(e){} }
-  if(profil){
-    profil.driveFolder = f || null;
-    db.collection('pengguna').doc(uid).update({driveFolder: f || null}).catch(()=>{});
-  }
-  lukisFolder();
-}
-
-function lukisFolder(){
-  const f = folderPilihan();
-  $('sFolder').value = f ? f.nama : 'Folder app sendiri (ez-OPR — nama sekolah)';
-}
-
-function idDariPautan(url){
-  const m = (url||'').match(/[-\w]{25,}/);
-  return m ? m[0] : '';
-}
-
-async function muatPicker(){
-  await muatSkrip('https://apis.google.com/js/api.js');
-  if(window.google && google.picker) return;
-  await new Promise((res,rej)=> gapi.load('picker', {
-    callback: res,
-    onerror: ()=> rej(new Error('Gagal memuatkan Google Picker.'))
-  }));
-}
-
-$('btnFolderAsal').onclick = ()=>{
-  simpanFolder(null);
-  toast('PDF akan disimpan dalam folder app sendiri.','ok');
-};
-
-$('btnPilihFolder').onclick = async ()=>{
-  const b = $('btnPilihFolder'); b.disabled = true;
-  try{
-    const token = await ambilTokenDrive(false);
-    await muatPicker();
-    const kunciApi = window.EZOPR_GOOGLE_API_KEY || (window.EZOPR_FIREBASE||{}).apiKey;
-    if(!kunciApi) throw new Error('Kunci API Google tiada dalam config.js.');
-
-    const jenis = 'application/vnd.google-apps.folder';
-    const milik = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
-      .setIncludeFolders(true).setSelectFolderEnabled(true).setMimeTypes(jenis);
-    const kongsi = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
-      .setIncludeFolders(true).setSelectFolderEnabled(true).setMimeTypes(jenis)
-      .setOwnedByMe(false).setLabel('Dikongsi dengan saya');
-
-    const pilih = await new Promise(res=>{
-      new google.picker.PickerBuilder()
-        .setOAuthToken(token)
-        .setDeveloperKey(kunciApi)
-        .setOrigin(location.protocol + '//' + location.host)
-        .addView(milik).addView(kongsi)
-        .enableFeature(google.picker.Feature.SUPPORT_DRIVES)
-        .setCallback(d=>{
-          if(d.action === google.picker.Action.PICKED) res(d.docs[0]);
-          else if(d.action === google.picker.Action.CANCEL) res(null);
-        })
-        .build().setVisible(true);
-    });
-
-    if(!pilih) return;
-    simpanFolder({ id: pilih.id, nama: pilih.name || 'Folder Drive' });
-    toast('Folder dipilih: ' + (pilih.name||'') + '. PDF akan disimpan di situ.','ok',4600);
-  }catch(e){ toast(e.message,'err',7000) }
-  finally{ b.disabled = false }
-};
-
-async function folderDrive(token){
-  const pilih = folderPilihan();
-  if(pilih) return pilih.id;
-
-  const kunci = 'ezopr.folder.' + profil.sekolahId;
-  const simpan = local.get(kunci);
-  if(simpan) return simpan;
-
-  const namaFolder = 'ez-OPR — ' + (sekolah.nama || profil.sekolahId.toUpperCase());
-  const q = "mimeType='application/vnd.google-apps.folder' and trashed=false and name='"
-          + namaFolder.replace(/'/g, "\\'") + "'";
-  const cari = await fetch('https://www.googleapis.com/drive/v3/files?fields=files(id)&q=' + encodeURIComponent(q),
-    { headers:{ Authorization:'Bearer ' + token } });
-  const hasil = await cari.json();
-  if(!cari.ok) throw new Error(hasil?.error?.message || 'Gagal mencari folder Drive.');
-  if(hasil.files && hasil.files.length){ local.set(kunci, hasil.files[0].id); return hasil.files[0].id }
-
-  const cipta = await fetch('https://www.googleapis.com/drive/v3/files?fields=id',{
-    method:'POST',
-    headers:{ Authorization:'Bearer '+token, 'Content-Type':'application/json' },
-    body: JSON.stringify({ name:namaFolder, mimeType:'application/vnd.google-apps.folder' })
-  });
-  const f = await cipta.json();
-  if(!cipta.ok) throw new Error(f?.error?.message || 'Gagal mencipta folder Drive.');
-  local.set(kunci, f.id);
-  return f.id;
-}
-
-async function hantarDrive(token, blob, nama, folder){
-  const bnd = 'ezopr' + Date.now();
-  const meta = { name:nama, mimeType:'application/pdf', parents:[folder] };
-  const badan = new Blob([
-    `--${bnd}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n`,
-    JSON.stringify(meta),
-    `\r\n--${bnd}\r\nContent-Type: application/pdf\r\n\r\n`,
-    blob,
-    `\r\n--${bnd}--`
-  ]);
-  const r = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink',{
-    method:'POST',
-    headers:{ Authorization:'Bearer '+token, 'Content-Type':'multipart/related; boundary='+bnd },
-    body: badan
-  });
-  const j = await r.json();
-  if(!r.ok){ const e = new Error(j?.error?.message || 'Muat naik gagal.'); e.status = r.status; throw e }
-  return j;
-}
-
-$('btnDrive').onclick = async ()=>{
-  const b = $('btnDrive'); b.disabled = true; b.textContent = 'Uploading…';
-  $('driveLink').innerHTML = '';
-  try{
-    const {blob, nama} = await binaPdf();
-    let token = await ambilTokenDrive(false);
-    let fail;
-    try{
-      fail = await hantarDrive(token, blob, nama, await folderDrive(token));
-    }catch(e){
-      if(e.status !== 401 && e.status !== 403) throw e;
-      token = await ambilTokenDrive(true);            // token luput — minta semula
-      fail = await hantarDrive(token, blob, nama, await folderDrive(token));
-    }
-
-    if(fail.webViewLink){
-      const akaun = (auth.currentUser && auth.currentUser.email) || '';
-      $('driveLink').innerHTML = 'Tersimpan dalam Drive ' + esc(akaun) + ' — '
-        + `<a href="${fail.webViewLink}" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700">buka fail</a>`;
-    }
-    if(semasa && semasa.id){
-      db.collection('sekolah').doc(profil.sekolahId).collection('laporan').doc(semasa.id)
-        .update({ driveId: fail.id, driveLink: fail.webViewLink || '' }).catch(()=>{});
-    }
-    toast('PDF dimuat naik ke Google Drive.','ok',4200);
-  }catch(e){
-    if(/has not been used in project|is disabled|accessNotConfigured/i.test(e.message)){
-      // Nombor projek diambil terus daripada mesej Google supaya pautan
-      // membuka projek yang betul, bukan projek terakhir yang dibuka guru.
-      const no = (e.message.match(/project\s+(\d+)/) || [])[1] || '';
-      const url = 'https://console.cloud.google.com/apis/library/drive.googleapis.com'
-                + (no ? '?project=' + no : '');
-      $('driveLink').innerHTML =
-        'Google Drive API belum aktif untuk projek <b>' + (no || 'Firebase anda') + '</b>.<br>'
-        + '<a href="' + url + '" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700">Buka halaman Enable untuk projek ini</a><br>'
-        + 'Pastikan nombor projek di penjuru atas halaman itu ialah <b>' + (no || '—') + '</b>. '
-        + 'Selepas menekan Enable, tunggu 2–5 minit sebelum cuba semula.';
-      toast('Drive API belum aktif untuk projek ' + (no || 'ini') + '. Lihat pautan di bawah butang.','err',7000);
-    }else if(/File not found|notFound|insufficientFilePermissions/i.test(e.message) && folderPilihan()){
-      $('driveLink').innerHTML =
-        'App tidak dapat menulis ke folder yang dipilih. Ia mungkin telah dipadam, atau '
-        + 'kebenaran anda ke folder itu telah ditarik. Buka <b>Settings</b> → '
-        + '<b>Simpanan Google Drive</b> → <b>Choose folder</b> untuk memilihnya semula, '
-        + 'atau <b>Use app folder</b> untuk kembali ke folder app sendiri.';
-      toast('Folder Drive yang dipilih tidak boleh diakses.','err',7000);
-    }else if(/admin_policy_enforced|blocked|access_denied|disallowed_useragent/i.test(e.message)){
-      $('driveLink').innerHTML =
-        'Pentadbir Google Workspace domain anda menyekat app pihak ketiga daripada '
-        + 'mengakses Drive. Minta pentadbir DELIMa membenarkan app ini, atau log masuk '
-        + 'ez-OPR menggunakan akaun Google peribadi untuk menyimpan ke Drive peribadi.';
-      toast('Akses Drive disekat oleh dasar domain anda.','err',7000);
-    }else{
-      toast(e.message,'err',7000);
-    }
-  }
-  finally{ b.disabled=false; b.textContent='Save to Google Drive' }
-};
-
 /* ===================== MULA ===================== */
 const sk = local.get('ezopr.skala');
 if(sk){ $('fScale').value = sk; $('scaleVal').textContent = sk+'%'; $('page').style.setProperty('--sc', sk/100) }
@@ -2486,6 +2478,17 @@ if(sk){ $('fScale').value = sk; $('scaleVal').textContent = sk+'%'; $('page').st
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=> navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
+
+function pantauTalian(){
+  const off = !navigator.onLine;
+  $('offTag').classList.toggle('hide', !off);
+  ['btnAI','btnSenaraiModel','btnUjiAI'].forEach(id=>{
+    const b = $(id); if(b) b.disabled = off;
+  });
+}
+window.addEventListener('online',  ()=>{ pantauTalian(); toast('Sambungan kembali.','ok',2600) });
+window.addEventListener('offline', ()=>{ pantauTalian(); toast('Tiada sambungan. Laporan yang disimpan akan dihantar apabila talian kembali.','wait',5000) });
+pantauTalian();
 
 mula();
 </script>

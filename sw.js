@@ -1,5 +1,5 @@
 /* ez-OPR service worker — network-first untuk fail app, cache-first untuk aset */
-const CACHE = 'ezopr-v250';
+const CACHE = 'ezopr-v280';
 const ASET = [
   './', './index.html', './config.js', './manifest.json',
   './logo.png', './icon-192.png', './icon-512.png'
@@ -22,7 +22,7 @@ self.addEventListener('fetch', e=>{
 
   const url = new URL(req.url);
   // Jangan sentuh panggilan Firebase, Gemini atau OpenAI
-  if(/googleapis\.com|firebaseio\.com|firebaseapp\.com|openai\.com/.test(url.hostname)
+  if(/googleapis\.com|firebaseio\.com|firebaseapp\.com|openai\.com|accounts\.google\.com/.test(url.hostname)
      && !/gstatic\.com/.test(url.hostname)) return;
 
   // Aset luar (SDK, pustaka PDF): cache-first
